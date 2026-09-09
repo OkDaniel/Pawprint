@@ -3,7 +3,7 @@ import { env } from '../config/env.js';
 
 let pool: Pool | undefined;
 
-function connectionOptions(): PoolOptions {
+export function databaseConnectionOptions(): PoolOptions {
   const transport = env.DB_SOCKET
     ? { socketPath: env.DB_SOCKET }
     : { host: env.DB_HOST, port: env.DB_PORT };
@@ -19,7 +19,7 @@ function connectionOptions(): PoolOptions {
 }
 
 export function getDatabasePool(): Pool {
-  pool ??= mysql.createPool(connectionOptions());
+  pool ??= mysql.createPool(databaseConnectionOptions());
   return pool;
 }
 
@@ -33,4 +33,3 @@ export async function closeDatabasePool(): Promise<void> {
     pool = undefined;
   }
 }
-

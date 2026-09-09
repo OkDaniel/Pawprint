@@ -1,0 +1,27 @@
+INSERT INTO factors (slug, name, category, is_builtin, created_by_user_id, is_active) VALUES
+  ('study', 'Study', 'Lifestyle', TRUE, NULL, TRUE),
+  ('work', 'Work', 'Lifestyle', TRUE, NULL, TRUE),
+  ('exercise', 'Exercise', 'Lifestyle', TRUE, NULL, TRUE),
+  ('social-activity', 'Social Activity', 'Lifestyle', TRUE, NULL, TRUE),
+  ('travel', 'Travel', 'Lifestyle', TRUE, NULL, TRUE),
+  ('poor-sleep', 'Poor Sleep', 'Sleep', TRUE, NULL, TRUE),
+  ('good-sleep', 'Good Sleep', 'Sleep', TRUE, NULL, TRUE),
+  ('late-night', 'Late Night', 'Sleep', TRUE, NULL, TRUE),
+  ('stress', 'Stress', 'Mental / Behavioral', TRUE, NULL, TRUE),
+  ('feeling-overwhelmed', 'Feeling Overwhelmed', 'Mental / Behavioral', TRUE, NULL, TRUE),
+  ('procrastination', 'Procrastination', 'Mental / Behavioral', TRUE, NULL, TRUE),
+  ('gaming', 'Gaming', 'Mental / Behavioral', TRUE, NULL, TRUE),
+  ('self-critical-thoughts', 'Self-Critical Thoughts', 'Mental / Behavioral', TRUE, NULL, TRUE),
+  ('sick-illness', 'Sick / Illness', 'Physical', TRUE, NULL, TRUE),
+  ('injury', 'Injury', 'Physical', TRUE, NULL, TRUE),
+  ('menstrual-symptoms', 'Menstrual Symptoms', 'Physical', TRUE, NULL, TRUE),
+  ('caffeine', 'Caffeine', 'Food / Substances', TRUE, NULL, TRUE),
+  ('alcohol', 'Alcohol', 'Food / Substances', TRUE, NULL, TRUE),
+  ('skipped-meal', 'Skipped Meal', 'Food / Substances', TRUE, NULL, TRUE),
+  ('heavy-meal', 'Heavy Meal', 'Food / Substances', TRUE, NULL, TRUE),
+  ('weather', 'Weather', 'Environment', TRUE, NULL, TRUE),
+  ('crowds', 'Crowds', 'Environment', TRUE, NULL, TRUE),
+  ('noise', 'Noise', 'Environment', TRUE, NULL, TRUE)
+ON DUPLICATE KEY UPDATE
+  name = VALUES(name), category = VALUES(category), is_builtin = TRUE,
+  created_by_user_id = NULL, is_active = TRUE;

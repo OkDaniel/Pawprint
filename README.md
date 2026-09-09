@@ -1,6 +1,6 @@
 # Pawprint 
 
-A desktop personal health tracker with a cat companion. This repo has only the initial skeleton.
+A desktop personal health tracker with a cat companion. The current vertical slice supports session authentication and a focused, mood-first Check-In wizard with customizable feelings, symptoms, and factor quick lists.
 
 ## Prerequisites
 
@@ -22,7 +22,16 @@ A desktop personal health tracker with a cat companion. This repo has only the i
    cp .env.example .env
    ```
 
-3. Create the MariaDB database named by `DB_NAME` and grant the configured user access. Phase 1 verifies connectivity but does not create application tables yet.
+3. Create the MariaDB database and user named in `.env`, then initialize the non-destructive schema and built-in tracking libraries:
+
+   ```bash
+   mysql -u root -p -e "CREATE DATABASE IF NOT EXISTS capstone CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;"
+   npm run db:migrate
+   npm run db:seed
+   npm run db:verify
+   ```
+
+   If your `DB_NAME` is not `capstone`, use that name in the SQL command. Grant the configured `DB_USER` access using your local MariaDB administration process.
 
 4. Start the client, server, and shared-package watcher:
 
@@ -42,6 +51,9 @@ Check the API directly at `http://localhost:3001/api/health`.
 - `npm run lint` — lint all workspaces
 - `npm run typecheck` — type-check all workspaces
 - `npm test` — run the test suites once
+- `npm run db:migrate` — apply only numbered migrations not previously recorded
+- `npm run db:seed` — safely upsert the built-in factor, feeling, and symptom libraries
+- `npm run db:verify` — verify tables, seed counts, and the factor-intensity column
 
 ## Environment
 
@@ -57,4 +69,4 @@ shared/   Types and validation shared across runtime boundaries
 
 ## Current milestone boundary
 
-This milestone has no authentication, schema migrations, tracking forms, analytics, sprites, or game logic. Routes other than Home are only placeholders for later development and deployment.
+Authentication, normalized Check-In persistence, safe custom tracking items, customizable quick lists, factor intensity, and Recent Check-Ins are implemented. Sleep, analytics, medication, game rewards, sprites, and other game logic remain future milestones.

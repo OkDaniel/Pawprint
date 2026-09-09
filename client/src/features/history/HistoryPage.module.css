@@ -1,0 +1,6 @@
+.page { max-width: 52rem; margin: 0 auto; }
+.list { display: grid; gap: 1rem; padding: 0; list-style: none; }
+.entry { padding: 1.2rem; border: 1px solid var(--border); border-radius: 1.2rem; background: var(--surface); box-shadow: var(--shadow); }
+.entry time { color: var(--text-muted); font-weight: 650; }
+.entry p { margin: .45rem 0 0; }
+.error { color: #9d3028; }

@@ -19,7 +19,10 @@ const envSchema = z.object({
   DB_PASSWORD: z.string().default(''),
   DB_NAME: z.string().min(1).default('capstone'),
   SESSION_SECRET: z.string().default('development-only-change-me'),
+}).superRefine((value, context) => {
+  if (value.NODE_ENV === 'production' && value.SESSION_SECRET.length < 32) {
+    context.addIssue({ code: 'custom', path: ['SESSION_SECRET'], message: 'Production session secrets must be at least 32 characters.' });
+  }
 });
 
 export const env = envSchema.parse(process.env);
-

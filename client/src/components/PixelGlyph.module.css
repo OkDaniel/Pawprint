@@ -1,0 +1,18 @@
+.glyph {
+  display: inline-block;
+  flex: 0 0 auto;
+  background-repeat: no-repeat;
+  image-rendering: pixelated;
+  mix-blend-mode: multiply;
+}
+
+.number,
+.word,
+.text {
+  display: inline-flex;
+  align-items: center;
+}
+
+.number,
+.word { gap: 2px; }
+.text { gap: 10px; }

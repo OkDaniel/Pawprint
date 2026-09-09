@@ -4,5 +4,7 @@
 .navigation { display: flex; gap: 1rem; }
 .navigation a { color: var(--text-muted); font-weight: 650; text-decoration: none; }
 .navigation a[aria-current='page'] { color: var(--accent-strong); }
+.account { display: flex; align-items: center; gap: .65rem; }
+.account button { padding: .45rem .75rem; border: 1px solid var(--border); border-radius: 999px; background: white; cursor: pointer; }
 .main { width: min(1120px, calc(100% - 3rem)); margin: 0 auto; padding: 3rem 0; }
-
+@media (max-width: 760px) { .header { align-items: flex-start; flex-wrap: wrap; } .navigation { order: 3; width: 100%; overflow-x: auto; } }
