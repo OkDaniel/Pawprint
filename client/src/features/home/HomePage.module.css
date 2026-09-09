@@ -1,0 +1,31 @@
+.home {
+  min-height: calc(100vh - 11rem);
+  display: grid;
+  place-items: center;
+}
+
+.room {
+  width: min(52rem, 88vw);
+  min-height: min(32rem, 65vh);
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  border-radius: 2rem;
+  background: linear-gradient(
+    to bottom,
+    var(--sky) 0 58%,
+    var(--floor) 58% 100%
+  );
+  box-shadow: var(--shadow);
+}
+
+.room h1 {
+  margin: 0;
+  padding: 0.7rem 1.25rem;
+  border-radius: 999px;
+  background: rgb(255 255 255 / 82%);
+  color: var(--text);
+  font-size: clamp(1.5rem, 3vw, 2.25rem);
+  line-height: 1;
+}

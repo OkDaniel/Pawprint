@@ -1,0 +1,24 @@
+{
+  "name": "pawprint-capstone",
+  "version": "0.1.0",
+  "private": true,
+  "workspaces": [
+    "client",
+    "server",
+    "shared"
+  ],
+  "scripts": {
+    "dev": "npm run build --workspace=@capstone/shared && concurrently -n shared,server,client -c yellow,blue,green \"npm run dev --workspace=@capstone/shared\" \"npm run dev --workspace=@capstone/server\" \"npm run dev --workspace=@capstone/client\"",
+    "build": "npm run build --workspace=@capstone/shared && npm run build --workspace=@capstone/client && npm run build --workspace=@capstone/server",
+    "start": "npm run start --workspace=@capstone/server",
+    "lint": "npm run lint --workspaces --if-present",
+    "test": "npm run test --workspaces --if-present",
+    "typecheck": "npm run typecheck --workspaces --if-present"
+  },
+  "devDependencies": {
+    "concurrently": "^9.2.1"
+  },
+  "engines": {
+    "node": ">=24"
+  }
+}

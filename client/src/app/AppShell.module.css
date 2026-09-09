@@ -1,0 +1,8 @@
+.shell { min-height: 100vh; }
+.header { display: flex; align-items: center; justify-content: space-between; gap: 2rem; padding: 1rem 2rem; background: var(--surface); border-bottom: 1px solid var(--border); }
+.brand { color: var(--text); font-size: 1.2rem; font-weight: 750; text-decoration: none; }
+.navigation { display: flex; gap: 1rem; }
+.navigation a { color: var(--text-muted); font-weight: 650; text-decoration: none; }
+.navigation a[aria-current='page'] { color: var(--accent-strong); }
+.main { width: min(1120px, calc(100% - 3rem)); margin: 0 auto; padding: 3rem 0; }
+
