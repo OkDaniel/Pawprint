@@ -19,6 +19,16 @@ describe('TrackingLibraryService custom-item safety', () => {
     await expect(new TrackingLibraryService(repository).deactivateFeeling(7, 99)).rejects.toMatchObject({ status: 404, code: 'CUSTOM_ITEM_NOT_FOUND' });
   });
 
+  it('rejects deactivation when a custom symptom is not owned by the user', async () => {
+    const repository = { deactivateCustom: vi.fn(async () => false) } as unknown as TrackingLibraryRepository;
+    await expect(new TrackingLibraryService(repository).deactivateSymptom(7, 99, 'Mental')).rejects.toMatchObject({ status: 404, code: 'CUSTOM_ITEM_NOT_FOUND' });
+  });
+
+  it('rejects deactivation when a custom factor is not owned by the user', async () => {
+    const repository = { deactivateCustom: vi.fn(async () => false) } as unknown as TrackingLibraryRepository;
+    await expect(new TrackingLibraryService(repository).deactivateFactor(7, 99)).rejects.toMatchObject({ status: 404, code: 'CUSTOM_ITEM_NOT_FOUND' });
+  });
+
   it('returns the active library after deactivating an owned custom symptom', async () => {
     const repository = { deactivateCustom: vi.fn(async () => true), listSymptoms: vi.fn(async () => []) } as unknown as TrackingLibraryRepository;
     await expect(new TrackingLibraryService(repository).deactivateSymptom(7, 12, 'Mental')).resolves.toEqual([]);

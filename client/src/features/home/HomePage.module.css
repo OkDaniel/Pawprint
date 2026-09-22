@@ -12,7 +12,7 @@
   display: grid;
   justify-items: end;
   padding-top: clamp(4.5rem, 10vh, 6.5rem);
-  transform: translateX(-.75rem);
+  transform: translate(-165px, -140px);
 }
 .checkIn {
   display: inline-flex;

@@ -17,4 +17,13 @@ describe('private API authorization', () => {
   it('rejects anonymous check-in creation', async () => {
     await request(createApp()).post('/api/check-ins').send({ mood: 4, factorIds: [] }).expect(401);
   });
+  it('rejects anonymous custom-item creation', async () => {
+    await request(createApp()).post('/api/feelings').send({ name: 'Private' }).expect(401);
+    await request(createApp()).post('/api/symptoms').send({ name: 'Private', category: 'Mental' }).expect(401);
+    await request(createApp()).post('/api/factors').send({ name: 'Private', category: 'Lifestyle' }).expect(401);
+  });
+  it('rejects anonymous preference updates and custom-item deactivation', async () => {
+    await request(createApp()).put('/api/feelings/preferences').send({ ids: [] }).expect(401);
+    await request(createApp()).delete('/api/feelings/1').expect(401);
+  });
 });

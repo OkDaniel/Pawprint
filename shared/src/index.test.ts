@@ -15,4 +15,23 @@ describe('createCheckInRequestSchema', () => {
   it('accepts mood by itself', () => expect(parse({ mood: 3 })).toBe(true));
   it('rejects feelings without mood', () => expect(parse({ feelingIds: [1] })).toBe(false));
   it('rejects duplicate IDs', () => expect(parse({ mood: 4, feelingIds: [1, 1] })).toBe(false));
+  it('accepts each supported partial Sleep shape', () => {
+    expect(parse({ mood: 4, sleep: { durationMinutes: 450 } })).toBe(true);
+    expect(parse({ mood: 4, sleep: { qualityScore: 4 } })).toBe(true);
+    expect(parse({ mood: 4, sleep: { bedtime: '23:30', wakeTime: '07:00' } })).toBe(true);
+  });
+  it.each([0, 1441, -1, 1.5])('rejects invalid Sleep duration %s', (durationMinutes) => {
+    expect(parse({ mood: 4, sleep: { durationMinutes } })).toBe(false);
+  });
+  it.each([0, 6])('rejects Sleep quality %i', (qualityScore) => {
+    expect(parse({ mood: 4, sleep: { qualityScore } })).toBe(false);
+  });
+  it('rejects invalid clock times and an empty Sleep object', () => {
+    expect(parse({ mood: 4, sleep: { bedtime: '25:00' } })).toBe(false);
+    expect(parse({ mood: 4, sleep: {} })).toBe(false);
+  });
+  it('does not accept client ownership fields as part of the parsed Sleep command', () => {
+    const result = createCheckInRequestSchema.parse({ mood: 4, sleep: { durationMinutes: 450, userId: 99, logicalDate: '2020-01-01' } });
+    expect(result.sleep).toEqual({ durationMinutes: 450 });
+  });
 });

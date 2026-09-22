@@ -7,6 +7,7 @@ import { createSessionMiddleware } from './auth/session.js';
 import { createAuthRouter } from './routes/auth.js';
 import { createCheckInRouter } from './routes/checkIns.js';
 import { createTrackingLibraryRouter } from './routes/trackingLibrary.js';
+import { createSleepRouter } from './routes/sleep.js';
 
 export function createApp(): Express {
   const app = express();
@@ -17,6 +18,7 @@ export function createApp(): Express {
   app.use('/api/health', healthRouter);
   app.use('/api/auth', createAuthRouter());
   app.use('/api/check-ins', createCheckInRouter());
+  app.use('/api/sleep', createSleepRouter());
   app.use('/api', createTrackingLibraryRouter());
 
   if (env.NODE_ENV === 'production') {

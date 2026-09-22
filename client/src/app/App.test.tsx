@@ -15,11 +15,14 @@ describe('App', () => {
     expect(await screen.findByRole('heading', { name: 'Welcome back' })).toBeInTheDocument();
   });
 
-  it('removes Tracking navigation and safely redirects its old route Home', async () => {
+  it('shows only the intended app links and safely redirects the old Tracking route Home', async () => {
     vi.spyOn(globalThis, 'fetch').mockResolvedValue(new Response(JSON.stringify({ user: { id: 1, username: 'daniel' } }), { status: 200, headers: { 'Content-Type': 'application/json' } }));
     render(<MemoryRouter initialEntries={['/app/tracking']}><AuthProvider><App /></AuthProvider></MemoryRouter>);
     expect(await screen.findByRole('heading', { name: 'Cat Room' })).toBeInTheDocument();
-    expect(screen.queryByRole('link', { name: 'Tracking' })).not.toBeInTheDocument();
+    const navigation = screen.getByRole('navigation', { name: 'Primary navigation' });
+    expect(within(navigation).queryByRole('link', { name: 'Check In' })).not.toBeInTheDocument();
+    expect(within(navigation).queryByRole('link', { name: 'Tracking' })).not.toBeInTheDocument();
+    expect(within(navigation).getAllByRole('link').map((link) => link.textContent)).toEqual(['Home', 'History', 'Insights']);
   });
 
   it('opens Check-In from the single accessible Home action label', async () => {

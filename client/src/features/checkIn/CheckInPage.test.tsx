@@ -14,7 +14,7 @@ const symptoms = {
 } as const;
 const factors = [{ id: 20, slug: 'study', name: 'Study', category: 'Lifestyle', intensity: null, isBuiltin: true, isPinned: true }];
 
-function mockApi() {
+function mockApi(currentSleep: unknown = null) {
   let savedBody: unknown;
   const fetchMock = vi.spyOn(globalThis, 'fetch').mockImplementation(async (input, init) => {
     const url = String(input);
@@ -24,6 +24,7 @@ function mockApi() {
       return json({ symptoms: symptoms[category] });
     }
     if (url === '/api/factors') return json({ factors });
+    if (url === '/api/sleep/current') return json({ sleep: currentSleep });
     if (url === '/api/check-ins' && init?.method === 'POST') {
       savedBody = JSON.parse(String(init.body));
       return json({ checkIn: {} }, 201);
@@ -81,6 +82,8 @@ describe('Check-In wizard', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Next' }));
     expect(screen.getByRole('heading', { name: 'Cognitive', level: 1 })).toBeInTheDocument();
     fireEvent.click(screen.getByRole('button', { name: 'Next' }));
+    expect(screen.getByRole('heading', { name: 'Sleep', level: 1 })).toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: 'Next' }));
     expect(screen.getByRole('heading', { name: 'Factors', level: 1 })).toBeInTheDocument();
     fireEvent.click(screen.getByRole('button', { name: 'Study: Medium' }));
     fireEvent.click(screen.getByRole('button', { name: 'Save Check-In' }));
@@ -106,7 +109,7 @@ describe('Check-In wizard', () => {
     const api = mockApi(); renderWizard();
     await screen.findByRole('heading', { name: 'Mood', level: 1 });
     fireEvent.click(screen.getByRole('button', { name: 'Okay, mood 3 of 5' }));
-    for (let index = 0; index < 5; index += 1) fireEvent.click(screen.getByRole('button', { name: 'Next' }));
+    for (let index = 0; index < 6; index += 1) fireEvent.click(screen.getByRole('button', { name: 'Next' }));
     expect(screen.queryByRole('button', { name: 'More Factors' })).not.toBeInTheDocument();
     fireEvent.click(screen.getByRole('button', { name: 'Edit Factors' }));
     expect(screen.getByRole('heading', { name: 'Customize factors' })).toBeInTheDocument();
@@ -128,7 +131,7 @@ describe('Check-In wizard', () => {
     const api = mockApi(); renderWizard();
     await screen.findByRole('heading', { name: 'Mood', level: 1 });
     fireEvent.click(screen.getByRole('button', { name: 'Great, mood 5 of 5' }));
-    for (let index = 0; index < 5; index += 1) fireEvent.click(screen.getByRole('button', { name: 'Next' }));
+    for (let index = 0; index < 6; index += 1) fireEvent.click(screen.getByRole('button', { name: 'Next' }));
     fireEvent.click(screen.getByRole('button', { name: 'Save Check-In' }));
     await screen.findByRole('status');
     expect(api.savedBody()).toEqual({ mood: 5, feelingIds: [], pain: null, symptoms: [], factors: [] });
@@ -147,26 +150,77 @@ describe('Check-In wizard', () => {
     fireEvent.click(option);
     expect(option).toHaveAttribute('aria-pressed', 'true');
     expect(screen.getByText('Add feelings')).toBeInTheDocument();
-    for (let index = 0; index < 5; index += 1) fireEvent.click(screen.getByRole('button', { name: 'Next' }));
+    for (let index = 0; index < 6; index += 1) fireEvent.click(screen.getByRole('button', { name: 'Next' }));
     fireEvent.click(screen.getByRole('button', { name: 'Save Check-In' }));
     await screen.findByRole('status');
     expect(api.savedBody()).toMatchObject({ mood: value });
   });
 
-  it('composes visual 10 while submitting Pain 10 and preserves symptom severity 4', async () => {
+  it('renders normal-text ratings while submitting Pain 10 and preserving symptom severity 4', async () => {
     const api = mockApi(); renderWizard();
     await screen.findByRole('heading', { name: 'Mood', level: 1 });
     fireEvent.click(screen.getByRole('button', { name: 'Okay, mood 3 of 5' }));
     fireEvent.click(screen.getByRole('button', { name: 'Next' }));
     const painTen = screen.getByRole('button', { name: 'Generalized Pain: 10' });
-    expect(painTen.querySelector('[data-pixel-number="10"]')).not.toBeNull();
-    expect(painTen.querySelectorAll('[data-pixel-glyph]')).toHaveLength(2);
+    expect(painTen).toHaveTextContent('10');
+    expect(painTen.querySelector('[data-pixel-number]')).toBeNull();
+    expect(painTen.querySelector('[data-pixel-glyph]')).toBeNull();
     fireEvent.click(painTen);
-    fireEvent.click(screen.getByRole('button', { name: 'Headache: 4, Very Severe' }));
-    for (let index = 0; index < 4; index += 1) fireEvent.click(screen.getByRole('button', { name: 'Next' }));
+    const symptomFour = screen.getByRole('button', { name: 'Headache: 4, Very Severe' });
+    expect(symptomFour).toHaveTextContent('4');
+    expect(symptomFour.querySelector('[data-pixel-glyph]')).toBeNull();
+    fireEvent.click(symptomFour);
+    for (let index = 0; index < 5; index += 1) fireEvent.click(screen.getByRole('button', { name: 'Next' }));
     fireEvent.click(screen.getByRole('button', { name: 'Save Check-In' }));
     await screen.findByRole('status');
     expect(api.savedBody()).toMatchObject({ pain: 10, symptoms: [{ symptomId: 10, severity: 4 }] });
+  });
+
+  it('submits changed Sleep, preserves it through Back, and does not derive duration from times', async () => {
+    const api = mockApi(); renderWizard();
+    await screen.findByRole('heading', { name: 'Mood', level: 1 });
+    fireEvent.click(screen.getByRole('button', { name: 'Good, mood 4 of 5' }));
+    for (let index = 0; index < 5; index += 1) fireEvent.click(screen.getByRole('button', { name: 'Next' }));
+    expect(screen.getByRole('heading', { name: 'Sleep', level: 1 })).toBeInTheDocument();
+    fireEvent.change(screen.getByLabelText('Bedtime'), { target: { value: '23:30' } });
+    fireEvent.change(screen.getByLabelText('Wake time'), { target: { value: '07:00' } });
+    fireEvent.click(screen.getByRole('button', { name: 'Good 4/5' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Next' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Back' }));
+    expect(screen.getByLabelText('Bedtime')).toHaveValue('23:30');
+    fireEvent.click(screen.getByRole('button', { name: 'Next' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Save Check-In' }));
+    await screen.findByRole('status');
+    expect(api.savedBody()).toMatchObject({ sleep: { bedtime: '23:30', wakeTime: '07:00', durationMinutes: null, qualityScore: 4 } });
+  });
+
+  it('prefills existing daily Sleep but omits it when the user leaves it untouched', async () => {
+    const api = mockApi({ id: 8, logicalDate: '2026-09-15', bedtime: '23:30', wakeTime: '07:00', durationMinutes: 450, qualityScore: 4 });
+    renderWizard();
+    await screen.findByRole('heading', { name: 'Mood', level: 1 });
+    fireEvent.click(screen.getByRole('button', { name: 'Good, mood 4 of 5' }));
+    for (let index = 0; index < 5; index += 1) fireEvent.click(screen.getByRole('button', { name: 'Next' }));
+    expect(screen.getByLabelText('Hours')).toHaveValue(7);
+    expect(screen.getByLabelText('Minutes')).toHaveValue(30);
+    expect(screen.getByLabelText('Bedtime')).toHaveValue('23:30');
+    fireEvent.click(screen.getByRole('button', { name: 'Next' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Save Check-In' }));
+    await screen.findByRole('status');
+    expect(api.savedBody()).not.toHaveProperty('sleep');
+  });
+
+  it('normalizes entered Sleep hours and minutes without storing UI-only sleepTouched state', async () => {
+    const api = mockApi(); renderWizard();
+    await screen.findByRole('heading', { name: 'Mood', level: 1 });
+    fireEvent.click(screen.getByRole('button', { name: 'Okay, mood 3 of 5' }));
+    for (let index = 0; index < 5; index += 1) fireEvent.click(screen.getByRole('button', { name: 'Next' }));
+    fireEvent.change(screen.getByLabelText('Hours'), { target: { value: '7' } });
+    fireEvent.change(screen.getByLabelText('Minutes'), { target: { value: '30' } });
+    fireEvent.click(screen.getByRole('button', { name: 'Next' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Save Check-In' }));
+    await screen.findByRole('status');
+    expect(api.savedBody()).toMatchObject({ sleep: { durationMinutes: 450 } });
+    expect(api.savedBody()).not.toHaveProperty('sleepTouched');
   });
 });
 

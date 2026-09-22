@@ -45,6 +45,18 @@ export class CheckInRepository {
       for (const factor of input.factors) {
         await connection.execute('INSERT INTO check_in_factors (check_in_id, factor_id, intensity) VALUES (?, ?, ?)', [id, factor.factorId, factor.intensity]);
       }
+      if (input.sleep) {
+        await connection.execute(
+          `INSERT INTO sleep_entries
+             (user_id, logical_date, bedtime, wake_time, duration_minutes, quality_score)
+           VALUES (?, ?, ?, ?, ?, ?)
+           ON DUPLICATE KEY UPDATE
+             bedtime = VALUES(bedtime), wake_time = VALUES(wake_time),
+             duration_minutes = VALUES(duration_minutes), quality_score = VALUES(quality_score)`,
+          [userId, logicalDate, input.sleep.bedtime ?? null, input.sleep.wakeTime ?? null,
+            input.sleep.durationMinutes ?? null, input.sleep.qualityScore ?? null],
+        );
+      }
       await connection.commit();
       return id;
     } catch (error) {

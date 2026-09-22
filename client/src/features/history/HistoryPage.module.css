@@ -1,6 +1,11 @@
 .page { max-width: 52rem; margin: 0 auto; }
+.days { display: grid; gap: 1.5rem; }
+.day h2 { margin: 0 0 .7rem; font-size: 1.05rem; color: var(--text-muted); }
 .list { display: grid; gap: 1rem; padding: 0; list-style: none; }
 .entry { padding: 1.2rem; border: 1px solid var(--border); border-radius: 1.2rem; background: var(--surface); box-shadow: var(--shadow); }
 .entry time { color: var(--text-muted); font-weight: 650; }
 .entry p { margin: .45rem 0 0; }
+.sleepEntry { margin-bottom: 1rem; padding: 1rem 1.2rem; border: 1px solid var(--border); border-radius: 1.2rem; background: #f2f7ed; box-shadow: var(--shadow); }
+.sleepEntry h3 { margin: 0; }
+.sleepEntry p { margin: .35rem 0 0; }
 .error { color: #9d3028; }
