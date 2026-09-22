@@ -1,0 +1,35 @@
+.viewport {
+  display: block;
+  width: 6rem;
+  height: 6rem;
+  overflow: hidden;
+  image-rendering: pixelated;
+}
+
+.sheet {
+  display: block;
+  width: calc(100% * var(--frame-count));
+  height: 100%;
+  max-width: none;
+  animation: idle var(--animation-duration) steps(var(--frame-count), end) infinite;
+  image-rendering: pixelated;
+}
+
+@keyframes idle {
+  to {
+    transform: translateX(-100%);
+  }
+}
+
+@media (max-width: 920px) {
+  .viewport {
+    width: 4rem;
+    height: 4rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sheet {
+    animation-play-state: paused;
+  }
+}

@@ -4,8 +4,6 @@ import styles from './AppShell.module.css';
 
 const links = [
   ['Home', '/app'],
-  ['Check In', '/app/check-in'],
-  ['History', '/app/history'],
   ['Insights', '/app/insights'],
 ] as const;
 

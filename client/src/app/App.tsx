@@ -5,6 +5,7 @@ import { ProtectedRoute } from '../auth/ProtectedRoute';
 import { AuthPage } from '../features/auth/AuthPage';
 import { CheckInPage } from '../features/checkIn/CheckInPage';
 import { HistoryPage } from '../features/history/HistoryPage';
+import { SleepEditPage } from '../features/history/SleepEditPage';
 import { HomeLayer } from '../features/home/HomeLayer';
 
 export function App() {
@@ -18,9 +19,11 @@ export function App() {
         <Route element={<HomeLayer />}>
           <Route index element={null} />
           <Route path="check-in" element={<CheckInPage />} />
+          <Route path="check-in/:checkInId/edit" element={<CheckInPage />} />
+          <Route path="history" element={<HistoryPage />} />
         </Route>
         <Route path="insights" element={<PlaceholderPage title="Insights" />} />
-        <Route path="history" element={<HistoryPage />} />
+        <Route path="sleep/:logicalDate/edit" element={<SleepEditPage />} />
         <Route path="tracking" element={<Navigate to="/app" replace />} />
         <Route path="habits" element={<PlaceholderPage title="Habits" />} />
         <Route path="decorate" element={<PlaceholderPage title="Decorate" />} />

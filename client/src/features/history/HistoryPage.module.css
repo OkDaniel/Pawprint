@@ -1,6 +1,118 @@
-.page { max-width: 52rem; margin: 0 auto; }
+.backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 20;
+  display: grid;
+  place-items: center;
+  padding: 1.25rem;
+  background: rgb(32 45 40 / 48%);
+  backdrop-filter: blur(3px);
+}
+
+.dialog {
+  width: min(64rem, 96vw);
+  height: min(50rem, 90vh);
+  min-height: 0;
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+  overflow: hidden;
+  border: 1px solid var(--border);
+  border-radius: 1.75rem;
+  background: var(--surface);
+  box-shadow: 0 28px 80px rgb(30 48 37 / 30%);
+}
+
+.modalHeader {
+  display: grid;
+  gap: 1rem;
+  padding: 1.25rem 1.5rem;
+  border-bottom: 1px solid var(--border);
+  background: var(--surface);
+}
+
+.titleRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.titleRow h1 { margin: 0; }
+
+.close {
+  width: 2.5rem;
+  height: 2.5rem;
+  border: 0;
+  border-radius: 50%;
+  background: #ede8dc;
+  color: var(--text);
+  cursor: pointer;
+  font-size: 1.6rem;
+}
+
+.rangeControls,
+.customDates {
+  display: flex;
+  align-items: end;
+  gap: .65rem;
+  flex-wrap: wrap;
+}
+
+.rangeControls label {
+  display: grid;
+  gap: .25rem;
+  color: var(--text-muted);
+  font-size: .8rem;
+  font-weight: 700;
+}
+
+.rangeControls select,
+.rangeControls input {
+  min-height: 2.4rem;
+  padding: .4rem .6rem;
+  border: 1px solid var(--border);
+  border-radius: .65rem;
+  background: white;
+  color: var(--text);
+  font: inherit;
+}
+
+.customDates button {
+  min-height: 2.4rem;
+  padding: .4rem .85rem;
+  border: 0;
+  border-radius: 999px;
+  background: var(--accent-strong);
+  color: white;
+  cursor: pointer;
+  font: inherit;
+  font-weight: 750;
+}
+
+.historyScroll {
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 1.5rem;
+}
+
+.days { display: grid; gap: 1.5rem; }
+.day h2 { margin: 0 0 .7rem; font-size: 1.05rem; color: var(--text-muted); }
 .list { display: grid; gap: 1rem; padding: 0; list-style: none; }
-.entry { padding: 1.2rem; border: 1px solid var(--border); border-radius: 1.2rem; background: var(--surface); box-shadow: var(--shadow); }
+.entry { padding: 1.2rem; border: 1px solid var(--border); border-radius: 1.2rem; background: white; box-shadow: var(--shadow); }
 .entry time { color: var(--text-muted); font-weight: 650; }
+.entryHeader { display: flex; align-items: center; justify-content: space-between; gap: 1rem; }
+.entryHeader a { padding: .35rem .7rem; border: 1px solid var(--border); border-radius: 999px; color: var(--accent-strong); font-weight: 750; text-decoration: none; }
 .entry p { margin: .45rem 0 0; }
+.sleepEntry { margin-bottom: 1rem; padding: 1rem 1.2rem; border: 1px solid var(--border); border-radius: 1.2rem; background: #f2f7ed; box-shadow: var(--shadow); }
+.sleepEntry h3 { margin: 0; }
+.sleepEntry p { margin: .35rem 0 0; }
 .error { color: #9d3028; }
+
+@media (max-width: 700px) {
+  .backdrop { padding: .4rem; }
+  .dialog { width: 100%; height: 96vh; border-radius: 1.2rem; }
+  .modalHeader { padding: 1rem; }
+  .rangeControls { align-items: stretch; flex-direction: column; }
+  .historyScroll { padding: 1rem; }
+}

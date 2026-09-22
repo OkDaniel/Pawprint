@@ -1,4 +1,4 @@
-import type { CheckIn, CreateCheckInInput, Factor, Feeling, SymptomRating, SymptomCategory, FactorCategory } from '@capstone/shared';
+import type { CheckIn, CreateCheckInInput, Factor, Feeling, HistoryQuery, SymptomRating, SymptomCategory, FactorCategory, UpdateCheckInInput } from '@capstone/shared';
 import type { Pool, ResultSetHeader, RowDataPacket } from 'mysql2/promise';
 import { getDatabasePool } from '../db/pool.js';
 
@@ -14,12 +14,32 @@ export class CheckInRepository {
   accessibleFeelingIds(userId: number, ids: number[]): Promise<number[]> { return this.accessibleIds('feelings', userId, ids); }
   accessibleSymptomIds(userId: number, ids: number[]): Promise<number[]> { return this.accessibleIds('symptoms', userId, ids); }
 
+  accessibleFactorIdsForUpdate(userId: number, checkInId: number, ids: number[]): Promise<number[]> { return this.accessibleIdsForUpdate('factors', 'check_in_factors', 'factor_id', userId, checkInId, ids); }
+  accessibleFeelingIdsForUpdate(userId: number, checkInId: number, ids: number[]): Promise<number[]> { return this.accessibleIdsForUpdate('feelings', 'check_in_feelings', 'feeling_id', userId, checkInId, ids); }
+  accessibleSymptomIdsForUpdate(userId: number, checkInId: number, ids: number[]): Promise<number[]> { return this.accessibleIdsForUpdate('symptoms', 'symptom_entries', 'symptom_id', userId, checkInId, ids); }
+
   private async accessibleIds(table: 'factors' | 'feelings' | 'symptoms', userId: number, ids: number[]): Promise<number[]> {
     if (ids.length === 0) return [];
     const placeholders = ids.map(() => '?').join(', ');
     const [rows] = await this.pool.execute<Array<RowDataPacket & { id: number }>>(
       `SELECT id FROM ${table} WHERE id IN (${placeholders}) AND is_active = TRUE
        AND (is_builtin = TRUE OR created_by_user_id = ?)`, [...ids, userId],
+    );
+    return rows.map((row) => Number(row.id));
+  }
+
+  private async accessibleIdsForUpdate(table: 'factors' | 'feelings' | 'symptoms', linkTable: 'check_in_factors' | 'check_in_feelings' | 'symptom_entries', linkColumn: 'factor_id' | 'feeling_id' | 'symptom_id', userId: number, checkInId: number, ids: number[]): Promise<number[]> {
+    if (ids.length === 0) return [];
+    const placeholders = ids.map(() => '?').join(', ');
+    const [rows] = await this.pool.execute<Array<RowDataPacket & { id: number }>>(
+      `SELECT item.id FROM ${table} item
+       WHERE item.id IN (${placeholders}) AND (
+         (item.is_active = TRUE AND (item.is_builtin = TRUE OR item.created_by_user_id = ?))
+         OR EXISTS (
+           SELECT 1 FROM ${linkTable} link JOIN check_ins ci ON ci.id = link.check_in_id
+           WHERE link.${linkColumn} = item.id AND link.check_in_id = ? AND ci.user_id = ?
+         )
+       )`, [...ids, userId, checkInId, userId],
     );
     return rows.map((row) => Number(row.id));
   }
@@ -45,6 +65,18 @@ export class CheckInRepository {
       for (const factor of input.factors) {
         await connection.execute('INSERT INTO check_in_factors (check_in_id, factor_id, intensity) VALUES (?, ?, ?)', [id, factor.factorId, factor.intensity]);
       }
+      if (input.sleep) {
+        await connection.execute(
+          `INSERT INTO sleep_entries
+             (user_id, logical_date, bedtime, wake_time, duration_minutes, quality_score)
+           VALUES (?, ?, ?, ?, ?, ?)
+           ON DUPLICATE KEY UPDATE
+             bedtime = VALUES(bedtime), wake_time = VALUES(wake_time),
+             duration_minutes = VALUES(duration_minutes), quality_score = VALUES(quality_score)`,
+          [userId, logicalDate, input.sleep.bedtime ?? null, input.sleep.wakeTime ?? null,
+            input.sleep.durationMinutes ?? null, input.sleep.qualityScore ?? null],
+        );
+      }
       await connection.commit();
       return id;
     } catch (error) {
@@ -53,16 +85,59 @@ export class CheckInRepository {
     } finally { connection.release(); }
   }
 
-  async findById(userId: number, id: number): Promise<CheckIn | null> { return (await this.list(userId, 100, id))[0] ?? null; }
+  async update(userId: number, id: number, input: UpdateCheckInInput): Promise<boolean> {
+    const connection = await this.pool.getConnection();
+    try {
+      await connection.beginTransaction();
+      const [owned] = await connection.execute<RowDataPacket[]>(
+        'SELECT id FROM check_ins WHERE id = ? AND user_id = ? FOR UPDATE', [id, userId],
+      );
+      if (owned.length === 0) {
+        await connection.rollback();
+        return false;
+      }
+      await connection.execute('DELETE FROM check_in_feelings WHERE check_in_id = ?', [id]);
+      await connection.execute('DELETE FROM check_in_moods WHERE check_in_id = ?', [id]);
+      await connection.execute('DELETE FROM check_in_pain WHERE check_in_id = ?', [id]);
+      await connection.execute('DELETE FROM symptom_entries WHERE check_in_id = ?', [id]);
+      await connection.execute('DELETE FROM check_in_factors WHERE check_in_id = ?', [id]);
+      await connection.execute('INSERT INTO check_in_moods (check_in_id, mood_score) VALUES (?, ?)', [id, input.mood]);
+      for (const feelingId of input.feelingIds) {
+        await connection.execute('INSERT INTO check_in_feelings (check_in_id, feeling_id) VALUES (?, ?)', [id, feelingId]);
+      }
+      if (input.pain != null) await connection.execute('INSERT INTO check_in_pain (check_in_id, pain_score) VALUES (?, ?)', [id, input.pain]);
+      for (const symptom of input.symptoms) {
+        await connection.execute('INSERT INTO symptom_entries (check_in_id, symptom_id, severity) VALUES (?, ?, ?)', [id, symptom.symptomId, symptom.severity]);
+      }
+      for (const factor of input.factors) {
+        await connection.execute('INSERT INTO check_in_factors (check_in_id, factor_id, intensity) VALUES (?, ?, ?)', [id, factor.factorId, factor.intensity]);
+      }
+      await connection.execute('UPDATE check_ins SET updated_at = CURRENT_TIMESTAMP WHERE id = ?', [id]);
+      await connection.commit();
+      return true;
+    } catch (error) {
+      await connection.rollback();
+      throw error;
+    } finally { connection.release(); }
+  }
 
-  async list(userId: number, limit = 50, id?: number): Promise<CheckIn[]> {
+  async findById(userId: number, id: number): Promise<CheckIn | null> { return (await this.list(userId, 1, id))[0] ?? null; }
+
+  async list(userId: number, limit?: number, id?: number, range: HistoryQuery = {}): Promise<CheckIn[]> {
     const idClause = id === undefined ? '' : ' AND ci.id = ?';
-    const values = id === undefined ? [userId, limit] : [userId, id, limit];
+    const startClause = range.startDate ? ' AND ci.logical_date >= ?' : '';
+    const endClause = range.endDate ? ' AND ci.logical_date <= ?' : '';
+    const values: Array<string | number> = [userId];
+    if (id !== undefined) values.push(id);
+    if (range.startDate) values.push(range.startDate);
+    if (range.endDate) values.push(range.endDate);
+    const limitClause = limit === undefined ? '' : ' LIMIT ?';
+    if (limit !== undefined) values.push(limit);
     const [rows] = await this.pool.execute<CheckInRow[]>(
       `SELECT ci.id, ci.occurred_at, ci.logical_date, m.mood_score, p.pain_score
        FROM check_ins ci LEFT JOIN check_in_moods m ON m.check_in_id = ci.id
        LEFT JOIN check_in_pain p ON p.check_in_id = ci.id
-       WHERE ci.user_id = ?${idClause} ORDER BY ci.occurred_at DESC LIMIT ?`, values,
+       WHERE ci.user_id = ?${idClause}${startClause}${endClause} ORDER BY ci.occurred_at DESC${limitClause}`, values,
     );
     if (rows.length === 0) return [];
     const ids = rows.map((row) => Number(row.id));

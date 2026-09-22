@@ -31,20 +31,67 @@ const factorRatingSchema = z.object({
   intensity: z.number().int().min(1).max(3),
 });
 
-export const createCheckInRequestSchema = z.object({
+export const localTimeSchema = z.string().regex(/^([01]\d|2[0-3]):[0-5]\d$/, 'Use a 24-hour time in HH:MM format.');
+export const sleepInputSchema = z.object({
+  bedtime: localTimeSchema.nullable().optional(),
+  wakeTime: localTimeSchema.nullable().optional(),
+  durationMinutes: z.number().int().min(1).max(1440).nullable().optional(),
+  qualityScore: z.number().int().min(1).max(5).nullable().optional(),
+}).superRefine((sleep, context) => {
+  if (sleep.bedtime == null && sleep.wakeTime == null && sleep.durationMinutes == null && sleep.qualityScore == null) {
+    context.addIssue({ code: 'custom', message: 'Sleep must include at least one measurement.' });
+  }
+});
+
+export const historyQuerySchema = z.object({
+  startDate: z.string().date().optional(),
+  endDate: z.string().date().optional(),
+}).superRefine((value, context) => {
+  if (value.startDate && value.endDate && value.startDate > value.endDate) {
+    context.addIssue({ code: 'custom', message: 'Start date must be on or before end date.', path: ['startDate'] });
+  }
+});
+export type HistoryQuery = z.infer<typeof historyQuerySchema>;
+export const logicalDateSchema = z.string().date();
+
+const checkInRequestBaseSchema = z.object({
   mood: z.number().int().min(1).max(5),
   feelingIds: z.array(z.number().int().positive()).default([]),
   pain: z.number().int().min(0).max(10).nullable().optional(),
   symptoms: z.array(symptomRatingSchema).default([]),
   factors: z.array(factorRatingSchema).default([]),
-}).superRefine((value, context) => {
+});
+
+function validateUniqueCheckInChildren(value: { feelingIds: number[]; symptoms: Array<{ symptomId: number }>; factors: Array<{ factorId: number }> }, context: z.RefinementCtx): void {
   addDuplicateIssue(value.feelingIds, 'Feeling IDs must be unique.', ['feelingIds'], context);
   addDuplicateIssue(value.symptoms.map(({ symptomId }) => symptomId), 'Symptoms must be unique.', ['symptoms'], context);
   addDuplicateIssue(value.factors.map(({ factorId }) => factorId), 'Factors must be unique.', ['factors'], context);
-});
+}
+
+export const createCheckInRequestSchema = checkInRequestBaseSchema.extend({
+  sleep: sleepInputSchema.optional(),
+}).superRefine(validateUniqueCheckInChildren);
+
+export const updateCheckInRequestSchema = checkInRequestBaseSchema.superRefine(validateUniqueCheckInChildren);
 
 export type CreateCheckInRequest = z.input<typeof createCheckInRequestSchema>;
 export type CreateCheckInInput = z.output<typeof createCheckInRequestSchema>;
+export type UpdateCheckInInput = z.output<typeof updateCheckInRequestSchema>;
+export type SleepInput = z.output<typeof sleepInputSchema>;
+
+export function deriveSleepDurationMinutes(bedtime: string, wakeTime: string): number {
+  const [bedHour = 0, bedMinute = 0] = bedtime.split(':').map(Number);
+  const [wakeHour = 0, wakeMinute = 0] = wakeTime.split(':').map(Number);
+  const start = bedHour * 60 + bedMinute;
+  const end = wakeHour * 60 + wakeMinute;
+  const duration = (end - start + 1440) % 1440;
+  return duration === 0 ? 1440 : duration;
+}
+
+export function to24HourTime(hour: number, minute: number, period: 'AM' | 'PM'): string {
+  const normalizedHour = hour % 12 + (period === 'PM' ? 12 : 0);
+  return `${String(normalizedHour).padStart(2, '0')}:${String(minute).padStart(2, '0')}`;
+}
 function addDuplicateIssue(values: number[], message: string, path: string[], context: z.RefinementCtx): void {
   if (new Set(values).size !== values.length) context.addIssue({ code: 'custom', message, path });
 }
@@ -63,11 +110,22 @@ export interface CheckIn {
   symptoms: SymptomRating[];
   factors: Factor[];
 }
+export interface SleepEntry {
+  id: number;
+  logicalDate: string;
+  bedtime: string | null;
+  wakeTime: string | null;
+  durationMinutes: number | null;
+  qualityScore: number | null;
+}
 export interface CheckInResponse { checkIn: CheckIn }
 export interface CheckInListResponse { checkIns: CheckIn[] }
 export interface FactorListResponse { factors: Factor[] }
 export interface FeelingListResponse { feelings: Feeling[] }
 export interface SymptomListResponse { symptoms: Symptom[] }
+export interface SleepCurrentResponse { sleep: SleepEntry | null }
+export interface SleepResponse { sleep: SleepEntry }
+export interface SleepListResponse { sleepEntries: SleepEntry[] }
 export const preferenceRequestSchema = z.object({ ids: z.array(z.number().int().positive()) });
 export const customFeelingRequestSchema = z.object({ name: z.string().trim().min(1).max(100) });
 export const customSymptomRequestSchema = z.object({ name: z.string().trim().min(1).max(120), category: symptomCategorySchema });
