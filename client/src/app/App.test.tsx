@@ -135,6 +135,7 @@ describe('App', () => {
 
     const insightsDialog = await screen.findByRole('dialog', { name: 'Insights' });
     expect(within(insightsDialog).getByRole('heading', { name: 'Insights', level: 1 })).toBeInTheDocument();
+    expect(within(insightsDialog).getByText("A look back at what you've been tracking.")).toBeInTheDocument();
     expect(await within(insightsDialog).findByRole('heading', { name: 'Mood over the last 30 days' })).toBeInTheDocument();
     expect(screen.getByRole('heading', { name: 'Cat Room' })).toBeInTheDocument();
     expect(screen.getByTestId('cat-room-scene')).toBeInTheDocument();

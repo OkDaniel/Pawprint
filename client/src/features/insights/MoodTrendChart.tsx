@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState, type KeyboardEvent, type PointerEvent } f
 import type { MoodTrendPoint } from '@capstone/shared';
 import { buildMoodLineSegments, formatMood, type IndexedMoodPoint } from './moodTrendChartModel';
 import styles from './InsightsPage.module.css';
+import { moodOptions } from '../../components/moodOptions';
 
 interface ChartDimensions {
   width: number;
@@ -31,6 +32,7 @@ export function MoodTrendChart({ points, trackedDays, averageMood }: MoodTrendCh
   );
   const [selectedDate, setSelectedDate] = useState(() => tracked.at(-1)?.point.logicalDate ?? null);
   const selected = tracked.find(({ point }) => point.logicalDate === selectedDate) ?? tracked.at(-1) ?? null;
+  const selectedMood = selected ? moodOptions.find(({ value }) => value === Math.round(selected.point.moodMean!)) : undefined;
   const segments = useMemo(() => buildMoodLineSegments(points), [points]);
 
   function selectPoint(item: IndexedMoodPoint): void {
@@ -60,7 +62,6 @@ export function MoodTrendChart({ points, trackedDays, averageMood }: MoodTrendCh
         Mood data for {trackedDays} of the last 30 days.
         {' '}Average Mood {averageMood == null ? 'is unavailable' : `is ${formatMood(averageMood)} out of 5`}.
       </p>
-      <p className={styles.interactionHint!}>Select a point to view that day.</p>
       <svg
         className={styles.chart!}
         viewBox={`0 0 ${dimensions.width} ${dimensions.height}`}
@@ -117,7 +118,8 @@ export function MoodTrendChart({ points, trackedDays, averageMood }: MoodTrendCh
         <div className={styles.pointDetailsContent!}>
           <strong>{formatLongDate(selected.point.logicalDate)}</strong>
           <span className={styles.pointDetailsSummary!}>
-            <span>Mood {formatMood(selected.point.moodMean!)} / 5</span>
+            {selectedMood && <img className={styles.selectedMoodCue!} src={selectedMood.sprite} alt="" aria-hidden="true" />}
+            <span>Mood {formatMood(selected.point.moodMean!)} / 5{selectedMood ? ` (${Number.isInteger(selected.point.moodMean) ? '' : '~'}${selectedMood.label})` : ''}</span>
             <span aria-hidden="true">·</span>
             <span>{selected.point.checkInCount} {selected.point.checkInCount === 1 ? 'Check-In' : 'Check-Ins'}</span>
           </span>

@@ -103,7 +103,7 @@ export function FeelingCustomizationDialog({ stepTitle, items: initialItems, onC
     <div className={styles.view!} aria-hidden={pendingRemoval ? true : undefined}>
       <header className={styles.header!}>
         <button ref={backButton} className={styles.back!} type="button" disabled={saving} onClick={() => void save()} aria-label={`Back to ${stepTitle}`}>← {stepTitle}</button>
-        <div><h1 ref={heading} tabIndex={-1} id="feelings-customization-title">Customize feelings</h1><p id="feeling-custom-description">Choose which feelings appear in your quick Check-In list.</p></div>
+        <div><h1 ref={heading} tabIndex={-1} id="feelings-customization-title">Customize feelings</h1><p id="feeling-custom-description">Choose which feelings appear when you check in.</p></div>
       </header>
       <div className={styles.body!} role="region" aria-label="Feeling choices">
         <div className={styles.itemList!}>{items.map((item) => <div className={`${styles.item!} ${item.isPinned ? styles.itemSelected! : ''}`} key={item.id}>

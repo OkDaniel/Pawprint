@@ -7,24 +7,13 @@ import { FeelingCustomizationDialog } from './FeelingCustomizationDialog';
 import { TrackingLibraryCustomizationDialog } from './TrackingLibraryCustomizationDialog';
 import { FactorIntensityControl } from './FactorIntensityControl';
 import styles from './CheckInPage.module.css';
-import moodVeryLow from '../../assets/ui/mood-very-low.png';
-import moodLow from '../../assets/ui/mood-low.png';
-import moodOkay from '../../assets/ui/mood-okay.png';
-import moodGood from '../../assets/ui/mood-good.png';
-import moodGreat from '../../assets/ui/mood-great.png';
+import { moodOptions as moods } from '../../components/moodOptions';
 import mochiClassicSleep from '../../assets/cat/mochi-classic-sleep.png';
 import { buildSleepInput } from './sleepDraft';
 import { formatCompactSleepTime, parseTwelveHourTime } from './sleepTimeInput';
 
 const createSteps = ['Mood', 'Pain & Symptoms', 'Sleep', 'Factors'] as const;
 const editSteps = ['Mood', 'Pain & Symptoms', 'Factors'] as const;
-const moods = [
-  { value: 1, label: 'Very Low', sprite: moodVeryLow },
-  { value: 2, label: 'Low', sprite: moodLow },
-  { value: 3, label: 'Okay', sprite: moodOkay },
-  { value: 4, label: 'Good', sprite: moodGood },
-  { value: 5, label: 'Great', sprite: moodGreat },
-] as const;
 const severityLabels = ['None', 'Mild', 'Moderate', 'Severe', 'Very Severe'];
 type Ratings = Record<number, number>;
 type LibraryDraft = { feelings: Feeling[]; symptoms: Symptom[]; factors: Factor[] };
@@ -332,7 +321,7 @@ export function SleepForm({ existingSleep, quality, bedtime, wakeTime, bedtimeVa
   const qualityLabels = ['Very Poor', 'Poor', 'Okay', 'Good', 'Great'];
   const durationMinutes = bedtime && wakeTime && bedtimeValid && wakeTimeValid ? deriveSleepDurationMinutes(bedtime, wakeTime) : null;
   return <div className={styles.sleepStep!}>
-    <div className={styles.sleepIntro!}><div><h2>How did you sleep?</h2><p className={styles.hint!}>{existingSleep ? 'Your Sleep for this tracking day is ready to update.' : 'Add only what you know. You can leave this step blank.'}</p></div><span className={styles.sleepAccent!} aria-hidden="true" data-sleep-accent><img src={mochiClassicSleep} alt="" /></span></div>
+    <div className={styles.sleepIntro!}><div><h2>How did you sleep?</h2><p className={styles.hint!}>{existingSleep ? 'Your Sleep for this tracking day is ready to update.' : 'Add what you remember, or leave this blank.'}</p></div><span className={styles.sleepAccent!} aria-hidden="true" data-sleep-accent><img src={mochiClassicSleep} alt="" /></span></div>
     <fieldset className={styles.sleepGroup!}><legend>Sleep times</legend><div className={styles.timeInputs!}>
       <TwelveHourTimeInput label="Bedtime" value={bedtime} onChange={onBedtime} onValidityChange={onBedtimeValidity} />
       <TwelveHourTimeInput label="Wake Time" value={wakeTime} onChange={onWakeTime} onValidityChange={onWakeTimeValidity} />
@@ -434,7 +423,6 @@ function PainAndSymptomsStep({ customizeButtonRef, pain, setPain, symptoms, rati
   return <div className={styles.symptomStage!}>
     <DiscreteRow label="Generalized Pain" values={11} selected={pain} onSelect={setPain} labels={[]} compact />
     <div className={styles.libraryHeading!}><h2>Symptoms</h2><button ref={customizeButtonRef} className={styles.customizeAction!} type="button" onClick={customize}>Customize symptoms</button></div>
-    <p className={`${styles.hint!} ${styles.libraryHint!}`}>Rate what you noticed today.</p>
     {symptomCategories.map((category) => <section className={styles.symptomCategory!} key={category}>
       <h2>{category}</h2>
       <SymptomRows items={symptoms.filter((item) => item.category === category && item.isPinned)} ratings={ratings} setRatings={setRatings} />
@@ -460,5 +448,5 @@ function DiscreteRow({ label, values, selected, onSelect, labels, compact = fals
 
 function FactorStep({ customizeButtonRef, allFactors, ratings, setRatings, customize }: { customizeButtonRef: RefObject<HTMLButtonElement | null>; allFactors: Factor[]; ratings: Ratings; setRatings(value: Ratings): void; customize(): void }) {
   const factors = allFactors.filter(({ isPinned }) => isPinned);
-  return <><div className={styles.libraryHeading!}><h2>What's been going on?</h2><button ref={customizeButtonRef} className={styles.customizeAction!} type="button" onClick={customize}>Customize factors</button></div><p className={`${styles.hint!} ${styles.libraryHint!}`}>Choose how much each factor was present. Select a level, or tap it again to clear.</p><div className={styles.factorRows!}>{factors.map((factor) => <div className={styles.factorRow!} key={factor.id}><strong>{factor.name}</strong><FactorIntensityControl factorName={factor.name} selected={ratings[factor.id] ?? null} onChange={(value) => { const next = { ...ratings }; if (value === null) delete next[factor.id]; else next[factor.id] = value; setRatings(next); }} /></div>)}</div>{factors.length === 0 && <p className={styles.hint!}>Your quick list is empty. Customize factors to add some.</p>}</>;
+  return <><div className={styles.libraryHeading!}><h2>What's been going on?</h2><button ref={customizeButtonRef} className={styles.customizeAction!} type="button" onClick={customize}>Customize factors</button></div><p className={`${styles.hint!} ${styles.libraryHint!}`}>Select a level, or tap it again to clear.</p><div className={styles.factorRows!}>{factors.map((factor) => <div className={styles.factorRow!} key={factor.id}><strong>{factor.name}</strong><FactorIntensityControl factorName={factor.name} selected={ratings[factor.id] ?? null} onChange={(value) => { const next = { ...ratings }; if (value === null) delete next[factor.id]; else next[factor.id] = value; setRatings(next); }} /></div>)}</div>{factors.length === 0 && <p className={styles.hint!}>Your quick list is empty. Customize factors to add some.</p>}</>;
 }

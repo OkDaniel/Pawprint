@@ -184,7 +184,7 @@ export function TrackingLibraryCustomizationDialog(props: ViewProps) {
     <div className={styles.view!} aria-hidden={pendingRemoval ? true : undefined}>
       <header className={styles.header!}>
         <button ref={backButton} className={styles.back!} type="button" disabled={Boolean(busyCategory)} onClick={() => void requestClose()} aria-label={`Back to ${props.stepTitle}`}>← {props.stepTitle}</button>
-        <div><h1 ref={heading} tabIndex={-1} id={titleId}>{title}</h1><p id={descriptionId}>Choose which {props.kind} appear in your quick Check-In list.</p></div>
+        <div><h1 ref={heading} tabIndex={-1} id={titleId}>{title}</h1><p id={descriptionId}>Choose which {props.kind} appear when you check in.</p></div>
       </header>
       <div className={styles.body!} role="region" aria-label={props.kind === 'symptoms' ? 'Symptom choices' : 'Factor choices'}>
         <div className={styles.groups!}>{categories.map((category) => {

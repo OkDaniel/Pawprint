@@ -66,13 +66,6 @@
   padding: 0 1.5rem .6rem;
 }
 
-.interactionHint {
-  margin: 0 0 .1rem;
-  color: #625a52;
-  font-size: .88rem;
-  text-align: right;
-}
-
 .chart {
   width: 100%;
   height: auto;
@@ -145,7 +138,8 @@
 .pointDetails {
   min-height: 3rem;
   display: grid;
-  grid-template-columns: auto minmax(0, 1fr);
+  grid-template-columns: auto minmax(0, max-content);
+  justify-content: center;
   align-items: center;
   gap: .25rem .85rem;
   margin-top: .125rem;
@@ -168,8 +162,8 @@
 .pointDetailsContent {
   min-width: 0;
   display: flex;
-  align-items: baseline;
-  justify-content: space-between;
+  align-items: center;
+  justify-content: flex-start;
   gap: .5rem 1rem;
   flex-wrap: wrap;
 }
@@ -178,17 +172,17 @@
 
 .pointDetailsSummary {
   display: inline-flex;
-  align-items: baseline;
+  align-items: center;
   gap: .4rem;
   flex-wrap: wrap;
 }
 
-.contextNote {
-  margin: -.6rem 1.5rem .85rem;
-  color: #554f48;
-  font-size: .92rem;
-  line-height: 1.35;
-  text-align: center;
+.selectedMoodCue {
+  width: 2rem;
+  height: 2rem;
+  flex: 0 0 auto;
+  object-fit: contain;
+  image-rendering: pixelated;
 }
 
 .loading,

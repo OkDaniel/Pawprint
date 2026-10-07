@@ -55,7 +55,7 @@ export function InsightsModal() {
         <header className={styles.modalHeader!}>
           <div>
             <h1 id="insights-title">Insights</h1>
-            <p>See patterns in the information you’ve tracked over time.</p>
+            <p>A look back at what you've been tracking.</p>
           </div>
           <button ref={closeButton} className={styles.close!} type="button" aria-label="Close Insights" onClick={close}>×</button>
         </header>

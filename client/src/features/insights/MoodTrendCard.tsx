@@ -28,7 +28,6 @@ export function MoodTrendCard({ trend }: MoodTrendCardProps) {
         </dl>
         {summary.trackedDays <= 2 && <p className={styles.sparseMessage!}>Keep checking in to build out your 30-day view.</p>}
         <MoodTrendChart points={trend.points} trackedDays={summary.trackedDays} averageMood={summary.averageMood} />
-        <p className={styles.contextNote!}>This view summarizes what you recorded; it does not identify causes.</p>
       </>}
     </section>
   );
