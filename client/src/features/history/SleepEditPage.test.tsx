@@ -20,8 +20,11 @@ describe('SleepEditPage', () => {
       <Route path="/app/history" element={<h1>History reached</h1>} />
     </Routes></MemoryRouter>);
     expect(await screen.findByLabelText('Bedtime')).toHaveValue('12:50');
-    expect(screen.getByLabelText('Estimated sleep duration')).toHaveTextContent('9h 0m');
-    expect(screen.queryByLabelText('Hours')).not.toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Bedtime AM' })).toHaveAttribute('aria-pressed', 'true');
+    expect(screen.getByLabelText('Wake Time')).toHaveValue('9:50');
+    expect(screen.getByRole('button', { name: 'Wake Time AM' })).toHaveAttribute('aria-pressed', 'true');
+    expect(screen.getByLabelText('Calculated sleep duration')).toHaveTextContent('9h 0m');
+    expect(screen.queryByRole('textbox', { name: /duration/i })).not.toBeInTheDocument();
     fireEvent.click(screen.getByRole('button', { name: 'Save Sleep' }));
     expect(await screen.findByRole('heading', { name: 'History reached' })).toBeInTheDocument();
     expect(savedBody).toMatchObject({ bedtime: '00:50', wakeTime: '09:50', durationMinutes: 540, qualityScore: 3 });
@@ -36,7 +39,8 @@ describe('SleepEditPage', () => {
       return json({ sleep: { id: 8, logicalDate: '2026-09-15', bedtime: '23:30', wakeTime: '07:00', durationMinutes: null, qualityScore: null } });
     });
     render(<MemoryRouter initialEntries={['/app/sleep/2026-09-15/edit']}><Routes><Route path="/app/sleep/:logicalDate/edit" element={<SleepEditPage />} /><Route path="/app/history" element={<h1>Done</h1>} /></Routes></MemoryRouter>);
-    await screen.findByLabelText('Bedtime');
+    expect(await screen.findByLabelText('Bedtime')).toHaveValue('11:30');
+    expect(screen.getByRole('button', { name: 'Bedtime PM' })).toHaveAttribute('aria-pressed', 'true');
     fireEvent.click(screen.getByRole('button', { name: 'Save Sleep' }));
     await screen.findByRole('heading', { name: 'Done' });
     expect(bodies[0]).toMatchObject({ bedtime: '23:30', wakeTime: '07:00', durationMinutes: 450, qualityScore: null });

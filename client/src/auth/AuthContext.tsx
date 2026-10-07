@@ -25,6 +25,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const result = await apiRequest<AuthResponse>('/api/auth/register', { method: 'POST', body: JSON.stringify({ username, password }) });
       setUser(result.user);
     },
+    async updateCompanion(catAppearance, catName) {
+      const result = await apiRequest<AuthResponse>('/api/auth/me', { method: 'PATCH', body: JSON.stringify({ catAppearance, catName }) });
+      setUser(result.user);
+    },
+    async completeOnboarding(input) {
+      const result = await apiRequest<AuthResponse>('/api/onboarding/complete', { method: 'PUT', body: JSON.stringify(input) });
+      setUser(result.user);
+    },
     async logout() { await apiRequest('/api/auth/logout', { method: 'POST' }); setUser(null); },
   }), [loading, user]);
 

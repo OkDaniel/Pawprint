@@ -5,16 +5,16 @@ import { SleepService } from './sleepService.js';
 describe('SleepService', () => {
   it('uses the centralized logical date for the current user Sleep lookup', async () => {
     const repository = { findForDate: vi.fn(async () => null) } as unknown as SleepRepository;
-    await new SleepService(repository, () => new Date('2026-09-15T08:00:00Z')).current(7);
+    await new SleepService(repository, () => new Date('2026-09-15T12:00:00Z')).current(7);
     expect(repository.findForDate).toHaveBeenCalledWith(7, '2026-09-15');
   });
 
-  it('requests a different daily record after the 4:00 UTC logical-date boundary', async () => {
-    let now = new Date('2026-09-15T03:59:59Z');
+  it('requests a different daily record after the 4:00 America/Chicago logical-date boundary', async () => {
+    let now = new Date('2026-09-15T08:59:59Z');
     const repository = { findForDate: vi.fn(async () => null) } as unknown as SleepRepository;
     const service = new SleepService(repository, () => now);
     await service.current(7);
-    now = new Date('2026-09-15T04:00:00Z');
+    now = new Date('2026-09-15T09:00:00Z');
     await service.current(7);
     expect(repository.findForDate).toHaveBeenNthCalledWith(1, 7, '2026-09-14');
     expect(repository.findForDate).toHaveBeenNthCalledWith(2, 7, '2026-09-15');

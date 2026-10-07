@@ -1,0 +1,78 @@
+.backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 20;
+  display: grid;
+  place-items: center;
+  padding: 1.25rem;
+  background: rgb(32 45 40 / 48%);
+  backdrop-filter: blur(3px);
+}
+
+.dialog {
+  width: min(72rem, 96vw);
+  height: min(52rem, 96vh);
+  min-height: 0;
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+  overflow: hidden;
+  border: 1px solid var(--border);
+  border-radius: 1.75rem;
+  background: var(--surface);
+  box-shadow: 0 28px 80px rgb(30 48 37 / 30%);
+}
+
+.modalHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: .65rem 1.4rem;
+  border-bottom: 1px solid var(--border);
+  background: var(--surface);
+}
+
+.modalHeader h1 {
+  margin: 0;
+  font-size: clamp(1.8rem, 3vw, 2.3rem);
+  line-height: 1.1;
+}
+
+.modalHeader p {
+  margin: .15rem 0 0;
+  color: #625a52;
+}
+
+.close {
+  width: 2.5rem;
+  height: 2.5rem;
+  flex: 0 0 2.5rem;
+  border: 0;
+  border-radius: 50%;
+  background: #ede8dc;
+  color: var(--text);
+  cursor: pointer;
+  font: inherit;
+  font-size: 1.6rem;
+}
+
+.close:focus-visible {
+  outline: 3px solid color-mix(in srgb, var(--accent-strong) 45%, transparent);
+  outline-offset: 2px;
+}
+
+.insightsScroll {
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: .45rem 1.5rem .5rem;
+}
+
+@media (max-width: 700px) {
+  .backdrop { padding: .4rem; }
+  .dialog { width: 100%; height: 96vh; border-radius: 1.2rem; }
+  .modalHeader { align-items: flex-start; padding: 1rem; }
+  .modalHeader h1 { font-size: 1.7rem; }
+  .modalHeader p { max-width: 16rem; margin-top: .35rem; font-size: .92rem; }
+  .insightsScroll { padding: .75rem; }
+}

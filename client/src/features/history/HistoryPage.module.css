@@ -50,17 +50,27 @@
   font-size: 1.6rem;
 }
 
-.rangeControls,
-.customDates {
+.rangeControls {
   display: flex;
   align-items: end;
   gap: .65rem;
   flex-wrap: wrap;
 }
 
-.rangeControls label {
+.customDates {
+  min-width: 0;
+  flex: 1 1 34rem;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(10rem, 1fr)) auto;
+  align-items: end;
+  gap: .65rem;
+}
+
+.rangeControls label,
+.dateControl {
   display: grid;
   gap: .25rem;
+  min-width: 0;
   color: var(--text-muted);
   font-size: .8rem;
   font-weight: 700;
@@ -77,8 +87,65 @@
   font: inherit;
 }
 
-.customDates button {
-  min-height: 2.4rem;
+.dateEntry {
+  width: 100%;
+  min-width: 0;
+  display: flex;
+  align-items: stretch;
+}
+
+.dateEntry > input[type='text'] {
+  height: 2.5rem;
+  min-height: 2.5rem;
+  min-width: 0;
+  flex: 1 1 auto;
+  border-radius: .65rem 0 0 .65rem;
+}
+
+.calendarPicker {
+  width: 2.5rem;
+  height: 2.5rem;
+  min-height: 2.5rem;
+  flex: 0 0 2.5rem;
+  display: grid;
+  place-items: center;
+  padding: 0;
+  border: 1px solid var(--border);
+  border-left: 0;
+  border-radius: 0 .65rem .65rem 0;
+  background: var(--accent);
+  color: var(--accent-strong);
+  cursor: pointer;
+}
+
+.calendarPicker:focus-visible {
+  outline: 3px solid color-mix(in srgb, var(--accent-strong) 45%, transparent);
+  outline-offset: 2px;
+}
+
+.rangeControls .nativeDateInput {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  min-height: 0;
+  padding: 0;
+  border: 0;
+  clip-path: inset(50%);
+  opacity: 0;
+  pointer-events: none;
+}
+
+.calendarIcon {
+  width: 1rem;
+  height: .9rem;
+  border: 2px solid currentcolor;
+  border-radius: .15rem;
+  box-shadow: inset 0 .2rem 0 currentcolor;
+}
+
+.customDates > button[type='submit'] {
+  height: 2.5rem;
+  min-height: 2.5rem;
   padding: .4rem .85rem;
   border: 0;
   border-radius: 999px;
@@ -114,5 +181,11 @@
   .dialog { width: 100%; height: 96vh; border-radius: 1.2rem; }
   .modalHeader { padding: 1rem; }
   .rangeControls { align-items: stretch; flex-direction: column; }
+  .customDates { width: 100%; flex: none; }
   .historyScroll { padding: 1rem; }
+}
+
+@media (max-width: 520px) {
+  .customDates { grid-template-columns: minmax(0, 1fr); }
+  .customDates > button[type='submit'] { justify-self: start; min-width: 6rem; }
 }

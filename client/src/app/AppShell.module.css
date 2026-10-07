@@ -1,10 +1,23 @@
 .shell { min-height: 100vh; }
 .header { display: flex; align-items: center; justify-content: space-between; gap: 2rem; padding: 1rem 2rem; background: var(--surface); border-bottom: 1px solid var(--border); }
 .brand { color: var(--text); font-size: 1.2rem; font-weight: 750; text-decoration: none; }
-.navigation { display: flex; gap: 1rem; }
-.navigation a { color: var(--text-muted); font-weight: 650; text-decoration: none; }
-.navigation a[aria-current='page'] { color: var(--accent-strong); }
 .account { display: flex; align-items: center; gap: .65rem; }
-.account button { padding: .45rem .75rem; border: 1px solid var(--border); border-radius: 999px; background: white; cursor: pointer; }
+.accountMenu { position: relative; }
+.accountTrigger, .logoutButton { padding: .45rem .75rem; border: 1px solid var(--border); border-radius: 999px; background: white; color: var(--text); cursor: pointer; font: inherit; }
+.accountTrigger { display: flex; align-items: center; gap: .35rem; font-weight: 700; }
+.accountTrigger[aria-expanded='true'] { border-color: var(--accent-strong); background: var(--accent); }
+.accountTrigger:focus-visible, .logoutButton:focus-visible, .closePanel:focus-visible, .saveCompanion:focus-visible { outline: 3px solid color-mix(in srgb, var(--accent-strong) 45%, transparent); outline-offset: 2px; }
+.accountPanel { position: absolute; z-index: 40; top: calc(100% + .65rem); right: 0; width: min(25rem, calc(100vw - 2rem)); padding: 1rem; border: 1px solid var(--border); border-radius: 1.2rem; background: var(--surface); box-shadow: 0 18px 50px rgb(30 48 37 / 24%); }
+.panelHeader { display: flex; align-items: center; justify-content: space-between; gap: 1rem; margin-bottom: .65rem; }
+.panelHeader h2 { margin: 0; font-size: 1.1rem; }
+.closePanel { width: 2rem; height: 2rem; display: grid; place-items: center; padding: 0; border: 0; border-radius: 50%; background: #ede8dc; color: var(--text); cursor: pointer; font: inherit; font-size: 1.2rem; }
+.accountPanel [role='img'] { width: 3rem; height: 3rem; }
+.accountPanel form { display: grid; gap: .75rem; }
+.catNameField { display: grid; gap: .35rem; font-weight: 750; }
+.catNameField input { min-height: 2.75rem; padding: .65rem .75rem; border: 1px solid var(--border); border-radius: .7rem; font: inherit; }
+.catNameField input:focus { outline: 3px solid color-mix(in srgb, var(--accent-strong) 45%, transparent); border-color: var(--accent-strong); }
+.saveCompanion { justify-self: end; min-width: 5rem; padding: .55rem 1rem; border: 0; border-radius: 999px; background: var(--accent-strong); color: white; cursor: pointer; font: inherit; font-weight: 750; }
+.saveCompanion:disabled { cursor: not-allowed; opacity: .6; }
+.accountError { margin: 0; color: #9d3028; }
 .main { width: min(1120px, calc(100% - 3rem)); margin: 0 auto; padding: 3rem 0; }
-@media (max-width: 760px) { .header { align-items: flex-start; flex-wrap: wrap; } .navigation { order: 3; width: 100%; overflow-x: auto; } }
+@media (max-width: 760px) { .header { align-items: flex-start; flex-wrap: wrap; } }

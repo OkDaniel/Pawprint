@@ -16,7 +16,8 @@
     "typecheck": "npm run build --workspace=@capstone/shared && npm run typecheck --workspaces --if-present",
     "db:migrate": "npm run db:migrate --workspace=@capstone/server",
     "db:seed": "npm run db:seed --workspace=@capstone/server",
-    "db:verify": "npm run db:verify --workspace=@capstone/server"
+    "db:verify": "npm run db:verify --workspace=@capstone/server",
+    "db:seed-demo": "npm run db:seed-demo --workspace=@capstone/server"
   },
   "devDependencies": {
     "concurrently": "^9.2.1"

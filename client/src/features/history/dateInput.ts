@@ -9,6 +9,16 @@ export function parseUserDate(value: string): string | null {
   return `${String(year).padStart(4, '0')}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
 }
 
+export function formatPickerDate(value: string): string {
+  const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(value);
+  if (!match) return '';
+  return `${Number(match[2])}/${Number(match[3])}/${match[1]}`;
+}
+
+export function formatLocalDate(value = new Date()): string {
+  return `${value.getFullYear()}-${String(value.getMonth() + 1).padStart(2, '0')}-${String(value.getDate()).padStart(2, '0')}`;
+}
+
 export function formatDateTyping(value: string, inputType = 'insertText', caretAtEnd = true): string {
   if (inputType !== 'insertText' || !caretAtEnd) return value;
   const parts = value.split('/');

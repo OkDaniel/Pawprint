@@ -8,6 +8,7 @@ describe('CheckInService library access', () => {
       accessibleFeelingIds: vi.fn(async () => []),
       accessibleSymptomIds: vi.fn(async () => []),
       accessibleFactorIds: vi.fn(async () => []),
+      ownedLibraryItems: vi.fn(async () => []),
       create: vi.fn(),
     } as unknown as CheckInRepository;
     const service = new CheckInService(repository);
@@ -20,6 +21,7 @@ describe('CheckInService library access', () => {
       accessibleFeelingIds: vi.fn(async () => []),
       accessibleSymptomIds: vi.fn(async () => []),
       accessibleFactorIds: vi.fn(async () => []),
+      ownedLibraryItems: vi.fn(async () => []),
       create: vi.fn(),
     } as unknown as CheckInRepository;
     await expect(new CheckInService(repository).create(7, { mood: 4, feelingIds: [901], pain: undefined, symptoms: [], factors: [] })).rejects.toMatchObject({ code: 'INVALID_FEELINGS' });
@@ -32,10 +34,29 @@ describe('CheckInService library access', () => {
       accessibleFeelingIds: vi.fn(async () => []),
       accessibleSymptomIds: vi.fn(async () => []),
       accessibleFactorIds: vi.fn(async () => []),
+      ownedLibraryItems: vi.fn(async () => []),
       create: vi.fn(),
     } as unknown as CheckInRepository;
     await expect(new CheckInService(repository).create(7, { mood: 4, feelingIds: [], pain: undefined, symptoms: [{ symptomId: 902, severity: 2 }], factors: [] })).rejects.toMatchObject({ code: 'INVALID_SYMPTOMS' });
     expect(repository.accessibleSymptomIds).toHaveBeenCalledWith(7, [902]);
+    expect(repository.create).not.toHaveBeenCalled();
+  });
+
+  it('identifies an owned inactive symptom and returns structured recovery details', async () => {
+    const repository = {
+      accessibleFeelingIds: vi.fn(async () => []),
+      accessibleSymptomIds: vi.fn(async () => []),
+      accessibleFactorIds: vi.fn(async () => []),
+      ownedLibraryItems: vi.fn(async () => [{ id: 30, name: 'Mania' }]),
+      create: vi.fn(),
+    } as unknown as CheckInRepository;
+    await expect(new CheckInService(repository).create(7, {
+      mood: 3, feelingIds: [], symptoms: [{ symptomId: 30, severity: 1 }], factors: [],
+    })).rejects.toMatchObject({
+      code: 'INVALID_SYMPTOMS',
+      message: '“Mania” was removed from your tracked symptoms.',
+      details: { kind: 'symptoms', unavailableIds: [30], items: [{ id: 30, name: 'Mania' }] },
+    });
     expect(repository.create).not.toHaveBeenCalled();
   });
 });
@@ -49,6 +70,7 @@ describe('CheckInService updates and Sleep handling', () => {
       accessibleFeelingIdsForUpdate: vi.fn(async (_userId, _checkInId, ids: number[]) => ids),
       accessibleSymptomIdsForUpdate: vi.fn(async (_userId, _checkInId, ids: number[]) => ids),
       accessibleFactorIdsForUpdate: vi.fn(async (_userId, _checkInId, ids: number[]) => ids),
+      ownedLibraryItems: vi.fn(async () => []),
       create: vi.fn(async () => 12), update: vi.fn(async () => true),
       findById: vi.fn(async () => ({ id: 12, occurredAt: '', logicalDate: '2026-09-22', mood: 4, feelings: [], pain: null, symptoms: [], factors: [] })),
     } as unknown as CheckInRepository;
@@ -57,6 +79,11 @@ describe('CheckInService updates and Sleep handling', () => {
     const repository = accessibleRepository();
     await new CheckInService(repository, () => new Date('2026-09-22T12:00:00Z')).create(7, { mood: 4, feelingIds: [], symptoms: [], factors: [], sleep: { bedtime: '23:30', wakeTime: '07:00', durationMinutes: 999 } });
     expect(repository.create).toHaveBeenCalledWith(7, expect.objectContaining({ sleep: expect.objectContaining({ durationMinutes: 450 }) }), expect.any(Date), expect.any(String));
+  });
+  it('treats 1:30 PM to 12:30 AM as an 11-hour overnight span', async () => {
+    const repository = accessibleRepository();
+    await new CheckInService(repository, () => new Date('2026-09-22T12:00:00Z')).create(7, { mood: 4, feelingIds: [], symptoms: [], factors: [], sleep: { bedtime: '13:30', wakeTime: '00:30', durationMinutes: 1 } });
+    expect(repository.create).toHaveBeenCalledWith(7, expect.objectContaining({ sleep: expect.objectContaining({ durationMinutes: 660 }) }), expect.any(Date), expect.any(String));
   });
   it('updates the owned Check-In without changing its identity', async () => {
     const repository = accessibleRepository();

@@ -11,8 +11,11 @@ describe('GET /api/health', () => {
 });
 
 describe('private API authorization', () => {
-  it.each(['/api/check-ins', '/api/factors', '/api/feelings', '/api/symptoms?category=Mental', '/api/auth/me'])('rejects anonymous access to %s', async (path) => {
+  it.each(['/api/check-ins', '/api/factors', '/api/feelings', '/api/symptoms?category=Mental', '/api/insights/mood-trend', '/api/auth/me'])('rejects anonymous access to %s', async (path) => {
     await request(createApp()).get(path).expect(401);
+  });
+  it('rejects anonymous onboarding completion', async () => {
+    await request(createApp()).put('/api/onboarding/complete').send({}).expect(401);
   });
   it('rejects anonymous check-in creation', async () => {
     await request(createApp()).post('/api/check-ins').send({ mood: 4, factorIds: [] }).expect(401);

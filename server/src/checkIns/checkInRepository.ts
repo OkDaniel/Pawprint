@@ -6,6 +6,7 @@ interface CheckInRow extends RowDataPacket { id: number; occurred_at: Date; logi
 interface FactorRow extends RowDataPacket { id: number; slug: string; name: string; category: FactorCategory; is_builtin?: number; check_in_id?: number; intensity?: number | null }
 interface FeelingRow extends RowDataPacket { id: number; slug: string | null; name: string; is_builtin: number; check_in_id?: number }
 interface SymptomRow extends RowDataPacket { id: number; name: string; category: SymptomCategory; severity?: number; check_in_id?: number }
+export interface OwnedLibraryItem { id: number; name: string }
 
 export class CheckInRepository {
   constructor(private readonly pool: Pool = getDatabasePool()) {}
@@ -17,6 +18,16 @@ export class CheckInRepository {
   accessibleFactorIdsForUpdate(userId: number, checkInId: number, ids: number[]): Promise<number[]> { return this.accessibleIdsForUpdate('factors', 'check_in_factors', 'factor_id', userId, checkInId, ids); }
   accessibleFeelingIdsForUpdate(userId: number, checkInId: number, ids: number[]): Promise<number[]> { return this.accessibleIdsForUpdate('feelings', 'check_in_feelings', 'feeling_id', userId, checkInId, ids); }
   accessibleSymptomIdsForUpdate(userId: number, checkInId: number, ids: number[]): Promise<number[]> { return this.accessibleIdsForUpdate('symptoms', 'symptom_entries', 'symptom_id', userId, checkInId, ids); }
+
+  async ownedLibraryItems(table: 'factors' | 'feelings' | 'symptoms', userId: number, ids: number[]): Promise<OwnedLibraryItem[]> {
+    if (ids.length === 0) return [];
+    const placeholders = ids.map(() => '?').join(', ');
+    const [rows] = await this.pool.execute<Array<RowDataPacket & OwnedLibraryItem>>(
+      `SELECT id, name FROM ${table} WHERE id IN (${placeholders})
+       AND (is_builtin = TRUE OR created_by_user_id = ?)`, [...ids, userId],
+    );
+    return rows.map((row) => ({ id: Number(row.id), name: row.name }));
+  }
 
   private async accessibleIds(table: 'factors' | 'feelings' | 'symptoms', userId: number, ids: number[]): Promise<number[]> {
     if (ids.length === 0) return [];

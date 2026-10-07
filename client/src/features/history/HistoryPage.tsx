@@ -2,7 +2,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import type { CheckIn, CheckInListResponse, SleepEntry, SleepListResponse } from '@capstone/shared';
 import { apiRequest } from '../../api/api';
-import { formatDateTyping, parseUserDate } from './dateInput';
+import { formatDateTyping, formatLocalDate, formatPickerDate, parseUserDate } from './dateInput';
 import styles from './HistoryPage.module.css';
 
 const moodLabels: Record<number, string> = { 1: 'Very Low', 2: 'Low', 3: 'Okay', 4: 'Good', 5: 'Great' };
@@ -59,7 +59,10 @@ export function HistoryPage() {
     event.preventDefault();
     const normalizedStart = parseUserDate(startDate);
     const normalizedEnd = parseUserDate(endDate);
+    const today = formatLocalDate();
     if (!normalizedStart || !normalizedEnd) { setDateError('Enter real dates as M/D/YYYY.'); return; }
+    if (normalizedStart > today) { setDateError('Start date cannot be in the future.'); return; }
+    if (normalizedEnd > today) { setDateError('End date cannot be in the future.'); return; }
     if (normalizedStart > normalizedEnd) { setDateError('Start date must be on or before end date.'); return; }
     setDateError(''); setAppliedStartDate(normalizedStart); setAppliedEndDate(normalizedEnd);
   }
@@ -68,7 +71,11 @@ export function HistoryPage() {
     <section ref={dialog} className={styles.dialog!} role="dialog" aria-modal="true" aria-labelledby="history-title">
     <header className={styles.modalHeader!}><div className={styles.titleRow!}><h1 id="history-title">History</h1><button ref={closeButton} className={styles.close!} type="button" aria-label="Close History" onClick={close}>×</button></div><div className={styles.rangeControls!} aria-label="History date range">
     <label>Show<select value={range} onChange={(event) => setRange(event.target.value as typeof range)}><option value="all">All</option><option value="7">Last 7 days</option><option value="30">Last 30 days</option><option value="custom">Custom date range</option></select></label>
-    {range === 'custom' && <form className={styles.customDates!} onSubmit={applyCustomRange}><label>Start date<input type="text" inputMode="numeric" placeholder="1/5/2026" value={startDate} onChange={(event) => setStartDate(formatDateTyping(event.target.value, (event.nativeEvent as InputEvent).inputType, event.target.selectionStart === event.target.value.length))} /></label><label>End date<input type="text" inputMode="numeric" placeholder="9/22/2026" value={endDate} onChange={(event) => setEndDate(formatDateTyping(event.target.value, (event.nativeEvent as InputEvent).inputType, event.target.selectionStart === event.target.value.length))} /></label><button type="submit">Apply</button></form>}
+    {range === 'custom' && <form className={styles.customDates!} noValidate onSubmit={applyCustomRange}>
+      <HistoryDateField id="history-start-date" label="Start date" placeholder="1/5/2026" value={startDate} onChange={setStartDate} />
+      <HistoryDateField id="history-end-date" label="End date" placeholder="9/22/2026" value={endDate} onChange={setEndDate} />
+      <button type="submit">Apply</button>
+    </form>}
   </div></header><div className={styles.historyScroll!}>
     {dateError && <p className={styles.error!} role="alert">{dateError}</p>}
     {loading && <p role="status">Loading…</p>}{error && <p className={styles.error!} role="alert">{error}</p>}
@@ -88,14 +95,39 @@ export function HistoryPage() {
   </div>;
 }
 
+function HistoryDateField({ id, label, placeholder, value, onChange }: { id: string; label: string; placeholder: string; value: string; onChange(value: string): void }) {
+  const picker = useRef<HTMLInputElement>(null);
+  const pickerValue = parseUserDate(value) ?? '';
+  const today = formatLocalDate();
+  function openPicker() {
+    const input = picker.current;
+    if (!input) return;
+    if (typeof input.showPicker === 'function') {
+      input.showPicker();
+      return;
+    }
+    input.focus();
+    input.click();
+  }
+  return <div className={styles.dateControl!} data-date-control={id}>
+    <label id={`${id}-label`} htmlFor={id}>{label}</label>
+    <div className={styles.dateEntry!}>
+      <input id={id} type="text" inputMode="numeric" placeholder={placeholder} value={value} onChange={(event) => onChange(formatDateTyping(event.target.value, (event.nativeEvent as InputEvent).inputType, event.target.selectionStart === event.target.value.length))} />
+      <button className={styles.calendarPicker!} type="button" aria-label={`Choose ${label.toLowerCase()} from calendar`} onClick={openPicker}>
+        <span className={styles.calendarIcon!} aria-hidden="true" />
+      </button>
+      <input ref={picker} id={`${id}-picker`} className={styles.nativeDateInput!} type="date" max={today} tabIndex={-1} aria-hidden="true" value={pickerValue} onChange={(event) => { if (event.target.value) onChange(formatPickerDate(event.target.value)); }} />
+    </div>
+  </div>;
+}
+
 function buildRangeQuery(range: 'all' | '7' | '30' | 'custom', startDate: string, endDate: string): string {
   if (range === 'all') return '';
   if (range === 'custom') return `?startDate=${encodeURIComponent(startDate)}&endDate=${encodeURIComponent(endDate)}`;
   const end = new Date();
   const start = new Date(end);
   start.setDate(start.getDate() - (Number(range) - 1));
-  const date = (value: Date) => `${value.getFullYear()}-${String(value.getMonth() + 1).padStart(2, '0')}-${String(value.getDate()).padStart(2, '0')}`;
-  return `?startDate=${date(start)}&endDate=${date(end)}`;
+  return `?startDate=${formatLocalDate(start)}&endDate=${formatLocalDate(end)}`;
 }
 
 function SleepCard({ sleep }: { sleep: SleepEntry }) {

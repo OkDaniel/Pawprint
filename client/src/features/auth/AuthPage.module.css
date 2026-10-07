@@ -7,3 +7,4 @@
 .form button { padding: .8rem; border: 0; border-radius: 999px; background: var(--accent-strong); color: white; font: inherit; font-weight: 750; cursor: pointer; }
 .error { color: #9d3028; }
 .switch { margin-bottom: 0; text-align: center; }
+@media (max-width: 520px) { .page { padding: .75rem; } .card { padding: 1.25rem; } }

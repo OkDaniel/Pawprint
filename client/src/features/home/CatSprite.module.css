@@ -11,11 +11,15 @@
   width: calc(100% * var(--frame-count));
   height: 100%;
   max-width: none;
-  animation: idle var(--animation-duration) steps(var(--frame-count), end) infinite;
+  animation: sprite-strip var(--animation-duration) steps(var(--frame-count), end) infinite;
   image-rendering: pixelated;
 }
 
-@keyframes idle {
+.oneShot {
+  animation-iteration-count: 1;
+}
+
+@keyframes sprite-strip {
   to {
     transform: translateX(-100%);
   }
@@ -25,6 +29,13 @@
   .viewport {
     width: 4rem;
     height: 4rem;
+  }
+}
+
+@media (max-width: 520px) {
+  .viewport {
+    width: 2rem;
+    height: 2rem;
   }
 }
 

@@ -12,7 +12,8 @@
     "typecheck": "tsc -p tsconfig.json --noEmit --pretty false",
     "db:migrate": "tsx src/db/migrate.ts",
     "db:seed": "tsx src/db/seed.ts",
-    "db:verify": "tsx src/db/verify.ts"
+    "db:verify": "tsx src/db/verify.ts",
+    "db:seed-demo": "tsx src/db/demoData/seedDemo.ts"
   },
   "dependencies": {
     "@capstone/shared": "0.1.0",

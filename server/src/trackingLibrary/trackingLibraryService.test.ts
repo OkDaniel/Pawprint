@@ -4,14 +4,25 @@ import type { TrackingLibraryRepository } from './trackingLibraryRepository.js';
 
 describe('TrackingLibraryService custom-item safety', () => {
   it('rejects a case-insensitive duplicate feeling with a clear conflict', async () => {
-    const repository = { activeDuplicateExists: vi.fn(async () => true) } as unknown as TrackingLibraryRepository;
-    await expect(new TrackingLibraryService(repository).createFeeling(7, '  NUMB ')).rejects.toMatchObject({ status: 409, code: 'DUPLICATE_CUSTOM_ITEM', message: 'That feeling already exists.' });
+    const repository = { findActiveDuplicate: vi.fn(async () => ({ name: 'Numb' })) } as unknown as TrackingLibraryRepository;
+    await expect(new TrackingLibraryService(repository).createFeeling(7, '  NUMB ')).rejects.toMatchObject({
+      status: 409,
+      code: 'DUPLICATE_CUSTOM_ITEM',
+      message: 'Numb already exists. Select it from the list above instead.',
+      details: { kind: 'feeling', name: 'Numb' },
+    });
+    expect(repository.findActiveDuplicate).toHaveBeenCalledWith('feelings', 7, 'NUMB');
   });
 
-  it('checks symptom duplicates within the selected category', async () => {
-    const repository = { activeDuplicateExists: vi.fn(async () => true) } as unknown as TrackingLibraryRepository;
-    await expect(new TrackingLibraryService(repository).createSymptom(7, 'Foggy', 'Cognitive')).rejects.toMatchObject({ status: 409 });
-    expect(repository.activeDuplicateExists).toHaveBeenCalledWith('symptoms', 7, 'Foggy', 'Cognitive');
+  it('rejects a Symptom duplicate across categories and identifies the existing category', async () => {
+    const repository = { findActiveDuplicate: vi.fn(async () => ({ name: 'Stomach Pain', category: 'Physical Pain' as const })) } as unknown as TrackingLibraryRepository;
+    await expect(new TrackingLibraryService(repository).createSymptom(7, ' stomach pain ', 'Physical Other')).rejects.toMatchObject({
+      status: 409,
+      code: 'DUPLICATE_CUSTOM_ITEM',
+      message: 'Stomach Pain already exists under Physical Pain. Select it from the list above instead.',
+      details: { kind: 'symptom', name: 'Stomach Pain', category: 'Physical Pain' },
+    });
+    expect(repository.findActiveDuplicate).toHaveBeenCalledWith('symptoms', 7, 'stomach pain');
   });
 
   it('rejects deactivation when the custom feeling is not owned by the user', async () => {
@@ -36,8 +47,13 @@ describe('TrackingLibraryService custom-item safety', () => {
   });
 
   it('rejects a duplicate custom factor name', async () => {
-    const repository = { activeDuplicateExists: vi.fn(async () => true) } as unknown as TrackingLibraryRepository;
-    await expect(new TrackingLibraryService(repository).createFactor(7, 'STUDY', 'Lifestyle')).rejects.toMatchObject({ status: 409, message: 'That factor already exists.' });
+    const repository = { findActiveDuplicate: vi.fn(async () => ({ name: 'Caffeine', category: 'Food / Substances' as const })) } as unknown as TrackingLibraryRepository;
+    await expect(new TrackingLibraryService(repository).createFactor(7, ' caffeine ', 'Lifestyle')).rejects.toMatchObject({
+      status: 409,
+      message: 'Caffeine already exists under Food / Substances. Select it from the list above instead.',
+      details: { kind: 'factor', name: 'Caffeine', category: 'Food / Substances' },
+    });
+    expect(repository.findActiveDuplicate).toHaveBeenCalledWith('factors', 7, 'caffeine');
   });
 
   it('deactivates an owned custom factor without deleting history', async () => {

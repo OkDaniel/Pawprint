@@ -25,7 +25,7 @@ export class CheckInService {
       this.repository.accessibleSymptomIdsForUpdate(userId, id, input.symptoms.map(({ symptomId }) => symptomId)),
       this.repository.accessibleFactorIdsForUpdate(userId, id, input.factors.map(({ factorId }) => factorId)),
     ]);
-    this.assertLibraryCounts(input, feelings, symptoms, factors);
+    await this.assertLibraryCounts(userId, input, feelings, symptoms, factors);
     if (!await this.repository.update(userId, id, input)) throw new AppError(404, 'CHECK_IN_NOT_FOUND', 'Check-In not found.');
     const checkIn = await this.repository.findById(userId, id);
     if (!checkIn) throw new AppError(500, 'CHECK_IN_READ_FAILED', 'The Check-In was updated but could not be read.');
@@ -38,13 +38,26 @@ export class CheckInService {
       this.repository.accessibleSymptomIds(userId, input.symptoms.map(({ symptomId }) => symptomId)),
       this.repository.accessibleFactorIds(userId, input.factors.map(({ factorId }) => factorId)),
     ]);
-    this.assertLibraryCounts(input, feelings, symptoms, factors);
+    await this.assertLibraryCounts(userId, input, feelings, symptoms, factors);
   }
 
-  private assertLibraryCounts(input: UpdateCheckInInput, feelings: number[], symptoms: number[], factors: number[]): void {
-    if (feelings.length !== input.feelingIds.length) throw new AppError(400, 'INVALID_FEELINGS', 'One or more feelings are unavailable.');
-    if (symptoms.length !== input.symptoms.length) throw new AppError(400, 'INVALID_SYMPTOMS', 'One or more symptoms are unavailable.');
-    if (factors.length !== input.factors.length) throw new AppError(400, 'INVALID_FACTORS', 'One or more factors are unavailable.');
+  private async assertLibraryCounts(userId: number, input: UpdateCheckInInput, feelings: number[], symptoms: number[], factors: number[]): Promise<void> {
+    await this.assertAvailable(userId, 'feelings', input.feelingIds, feelings, 'INVALID_FEELINGS');
+    await this.assertAvailable(userId, 'symptoms', input.symptoms.map(({ symptomId }) => symptomId), symptoms, 'INVALID_SYMPTOMS');
+    await this.assertAvailable(userId, 'factors', input.factors.map(({ factorId }) => factorId), factors, 'INVALID_FACTORS');
+  }
+
+  private async assertAvailable(userId: number, kind: 'feelings' | 'symptoms' | 'factors', requestedIds: number[], accessibleIds: number[], code: string): Promise<void> {
+    const accessible = new Set(accessibleIds);
+    const unavailableIds = requestedIds.filter((id) => !accessible.has(id));
+    if (unavailableIds.length === 0) return;
+    const items = await this.repository.ownedLibraryItems(kind, userId, unavailableIds);
+    const singular = kind === 'feelings' ? 'feeling' : kind === 'symptoms' ? 'symptom' : 'factor';
+    const itemName = items.length === 1 && unavailableIds.length === 1 ? items[0]?.name : undefined;
+    const message = itemName
+      ? `“${itemName}” was removed from your tracked ${kind}.`
+      : `A ${singular} in this draft is no longer available.`;
+    throw new AppError(400, code, message, { kind, unavailableIds, items });
   }
 
   get(userId: number, id: number): Promise<CheckIn | null> { return this.repository.findById(userId, id); }

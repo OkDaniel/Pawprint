@@ -1,5 +1,5 @@
 import { Router, type Request } from 'express';
-import { loginRequestSchema, registerRequestSchema } from '@capstone/shared';
+import { loginRequestSchema, registerRequestSchema, updateCompanionRequestSchema } from '@capstone/shared';
 import { AuthService } from '../auth/authService.js';
 import { AppError } from '../errors/AppError.js';
 import { requireAuth } from '../middleware/requireAuth.js';
@@ -30,6 +30,11 @@ export function createAuthRouter(service = new AuthService()): Router {
 
   router.get('/me', requireAuth, async (request, response) => {
     response.json({ user: await service.currentUser(request.session.userId!) });
+  });
+
+  router.patch('/me', requireAuth, validateBody(updateCompanionRequestSchema), async (request, response) => {
+    const user = await service.updateCompanion(request.session.userId!, request.body.catAppearance, request.body.catName);
+    response.json({ user });
   });
   return router;
 }

@@ -1,19 +1,22 @@
-import type { Factor, FactorCategory, Feeling, Symptom, SymptomCategory } from '@capstone/shared';
+import { trackingLibraryStarterSlugs, type Factor, type FactorCategory, type Feeling, type Symptom, type SymptomCategory } from '@capstone/shared';
 import type { Pool, ResultSetHeader, RowDataPacket } from 'mysql2/promise';
 import { getDatabasePool } from '../db/pool.js';
 
 interface FeelingRow extends RowDataPacket { id: number; slug: string | null; name: string; is_builtin: number; preference: number | null }
 interface SymptomRow extends RowDataPacket { id: number; slug: string | null; name: string; category: SymptomCategory; is_builtin: number; preference: number | null }
 interface FactorRow extends RowDataPacket { id: number; slug: string; name: string; category: FactorCategory; is_builtin: number; preference: number | null }
+interface ActiveDuplicateRow extends RowDataPacket { name: string; category?: SymptomCategory | FactorCategory }
 
-const defaultFeelings = new Set(['happy', 'grateful', 'calm', 'okay', 'tired', 'confused', 'anxious', 'stressed', 'overwhelmed']);
+export interface ActiveLibraryDuplicate { name: string; category?: SymptomCategory | FactorCategory }
+
+const defaultFeelings = new Set<string>(trackingLibraryStarterSlugs.feelings);
 const defaultSymptoms: Record<SymptomCategory, Set<string>> = {
-  'Physical Pain': new Set(['headache', 'joint-pain', 'back-pain']),
-  'Physical Other': new Set(['fatigue', 'dizziness', 'drowsiness']),
-  Mental: new Set(['anxiety', 'irritability', 'feeling-overwhelmed']),
-  Cognitive: new Set(['brain-fog', 'forgetfulness', 'difficulty-focusing']),
+  'Physical Pain': new Set<string>(trackingLibraryStarterSlugs.symptoms['Physical Pain']),
+  'Physical Other': new Set<string>(trackingLibraryStarterSlugs.symptoms['Physical Other']),
+  Mental: new Set<string>(trackingLibraryStarterSlugs.symptoms.Mental),
+  Cognitive: new Set<string>(trackingLibraryStarterSlugs.symptoms.Cognitive),
 };
-const defaultFactors = new Set(['study', 'work', 'exercise', 'social-activity', 'stress', 'poor-sleep', 'caffeine', 'procrastination']);
+const defaultFactors = new Set<string>(trackingLibraryStarterSlugs.factors);
 
 export class TrackingLibraryRepository {
   constructor(private readonly pool: Pool = getDatabasePool()) {}
@@ -57,11 +60,18 @@ export class TrackingLibraryRepository {
   async setSymptomPreferences(userId: number, category: SymptomCategory, pinnedIds: number[]): Promise<void> { const items = await this.listSymptoms(userId, category); await this.replacePreferences('user_symptom_preferences', 'symptom_id', userId, items.map(({ id }) => id), pinnedIds); }
   async setFactorPreferences(userId: number, pinnedIds: number[]): Promise<void> { const items = await this.listFactors(userId); await this.replacePreferences('user_factor_preferences', 'factor_id', userId, items.map(({ id }) => id), pinnedIds); }
 
-  async activeDuplicateExists(kind: 'feelings' | 'symptoms' | 'factors', userId: number, name: string, category?: SymptomCategory): Promise<boolean> {
-    const categorySql = kind === 'symptoms' ? ' AND category = ?' : '';
-    const parameters = kind === 'symptoms' ? [userId, name, category ?? ''] : [userId, name];
-    const [rows] = await this.pool.execute<Array<RowDataPacket & { id: number }>>(`SELECT id FROM ${kind} WHERE is_active = TRUE AND (is_builtin = TRUE OR created_by_user_id = ?) AND LOWER(TRIM(name)) = LOWER(TRIM(?))${categorySql} LIMIT 1`, parameters);
-    return rows.length > 0;
+  async findActiveDuplicate(kind: 'feelings' | 'symptoms' | 'factors', userId: number, name: string): Promise<ActiveLibraryDuplicate | null> {
+    const categoryColumn = kind === 'feelings' ? '' : ', category';
+    const [rows] = await this.pool.execute<ActiveDuplicateRow[]>(
+      `SELECT name${categoryColumn} FROM ${kind}
+       WHERE is_active = TRUE AND (is_builtin = TRUE OR created_by_user_id = ?)
+         AND LOWER(TRIM(name)) = LOWER(TRIM(?))
+       ORDER BY is_builtin DESC, id
+       LIMIT 1`,
+      [userId, name],
+    );
+    const duplicate = rows[0];
+    return duplicate ? { name: duplicate.name, ...(duplicate.category ? { category: duplicate.category } : {}) } : null;
   }
 
   async createFeeling(userId: number, name: string): Promise<number> { const [result] = await this.pool.execute<ResultSetHeader>('INSERT INTO feelings (slug, name, is_builtin, created_by_user_id) VALUES (NULL, ?, FALSE, ?)', [name, userId]); return result.insertId; }

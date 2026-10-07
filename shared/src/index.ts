@@ -9,10 +9,20 @@ export const usernameSchema = z.string().trim().min(3).max(80).regex(
   'Use only letters, numbers, underscores, and hyphens.',
 );
 export const passwordSchema = z.string().min(8).max(128);
+export const catAppearanceKeys = ['mochi-classic', 'mochi-grey', 'mochi-orange', 'mochi-white'] as const;
+export const catAppearanceSchema = z.enum(catAppearanceKeys);
+export type CatAppearanceKey = z.infer<typeof catAppearanceSchema>;
+export const DEFAULT_CAT_APPEARANCE: CatAppearanceKey = 'mochi-classic';
+export const catNameSchema = z.string().trim().min(1, 'Give your companion a name.').max(40, 'Use 40 characters or fewer.');
+export function normalizeCatAppearanceKey(value: unknown): CatAppearanceKey {
+  const parsed = catAppearanceSchema.safeParse(value);
+  return parsed.success ? parsed.data : DEFAULT_CAT_APPEARANCE;
+}
 export const registerRequestSchema = z.object({ username: usernameSchema, password: passwordSchema });
-export const loginRequestSchema = registerRequestSchema;
+export const loginRequestSchema = z.object({ username: usernameSchema, password: passwordSchema });
+export const updateCompanionRequestSchema = z.object({ catAppearance: catAppearanceSchema, catName: catNameSchema });
 
-export interface AuthUser { id: number; username: string }
+export interface AuthUser { id: number; username: string; catAppearance: CatAppearanceKey; catName: string; onboardingCompleted: boolean }
 export interface AuthResponse { user: AuthUser }
 
 export const symptomCategories = ['Physical Pain', 'Physical Other', 'Mental', 'Cognitive'] as const;
@@ -21,6 +31,39 @@ export type SymptomCategory = z.infer<typeof symptomCategorySchema>;
 export const factorCategories = ['Lifestyle', 'Sleep', 'Mental / Behavioral', 'Physical', 'Food / Substances', 'Environment'] as const;
 export const factorCategorySchema = z.enum(factorCategories);
 export type FactorCategory = z.infer<typeof factorCategorySchema>;
+
+export const trackingLibraryStarterSlugs = {
+  feelings: ['happy', 'grateful', 'calm', 'okay', 'tired', 'confused', 'anxious', 'stressed', 'overwhelmed'],
+  symptoms: {
+    'Physical Pain': ['headache', 'joint-pain', 'back-pain'],
+    'Physical Other': ['fatigue', 'dizziness', 'drowsiness'],
+    Mental: ['anxiety', 'irritability', 'feeling-overwhelmed'],
+    Cognitive: ['brain-fog', 'forgetfulness', 'difficulty-focusing'],
+  },
+  factors: ['study', 'work', 'exercise', 'social-activity', 'stress', 'poor-sleep', 'caffeine', 'procrastination'],
+} as const satisfies {
+  feelings: readonly string[];
+  symptoms: Record<SymptomCategory, readonly string[]>;
+  factors: readonly string[];
+};
+
+const uniqueIdArraySchema = z.array(z.number().int().positive()).superRefine((ids, context) => {
+  if (new Set(ids).size !== ids.length) context.addIssue({ code: 'custom', message: 'Item IDs must be unique.' });
+});
+const symptomPreferenceSchema = z.object({ category: symptomCategorySchema, ids: uniqueIdArraySchema });
+export const onboardingCompletionRequestSchema = z.object({
+  catAppearance: catAppearanceSchema,
+  catName: catNameSchema,
+  feelingIds: uniqueIdArraySchema,
+  symptomPreferences: z.array(symptomPreferenceSchema).length(symptomCategories.length),
+  factorIds: uniqueIdArraySchema,
+}).superRefine((value, context) => {
+  const categories = value.symptomPreferences.map(({ category }) => category);
+  if (new Set(categories).size !== symptomCategories.length || symptomCategories.some((category) => !categories.includes(category))) {
+    context.addIssue({ code: 'custom', message: 'Include each symptom category exactly once.', path: ['symptomPreferences'] });
+  }
+});
+export type OnboardingCompletionInput = z.output<typeof onboardingCompletionRequestSchema>;
 
 const symptomRatingSchema = z.object({
   symptomId: z.number().int().positive(),
@@ -126,6 +169,28 @@ export interface SymptomListResponse { symptoms: Symptom[] }
 export interface SleepCurrentResponse { sleep: SleepEntry | null }
 export interface SleepResponse { sleep: SleepEntry }
 export interface SleepListResponse { sleepEntries: SleepEntry[] }
+
+export const moodTrendPointSchema = z.object({
+  logicalDate: logicalDateSchema,
+  moodMean: z.number().min(1).max(5).nullable(),
+  checkInCount: z.number().int().nonnegative(),
+});
+export const moodTrendResponseSchema = z.object({
+  range: z.object({
+    startLogicalDate: logicalDateSchema,
+    endLogicalDate: logicalDateSchema,
+    days: z.literal(30),
+  }),
+  summary: z.object({
+    trackedDays: z.number().int().min(0).max(30),
+    totalCheckIns: z.number().int().nonnegative(),
+    averageMood: z.number().min(1).max(5).nullable(),
+  }),
+  points: z.array(moodTrendPointSchema).length(30),
+});
+export type MoodTrendPoint = z.infer<typeof moodTrendPointSchema>;
+export type MoodTrendResponse = z.infer<typeof moodTrendResponseSchema>;
+
 export const preferenceRequestSchema = z.object({ ids: z.array(z.number().int().positive()) });
 export const customFeelingRequestSchema = z.object({ name: z.string().trim().min(1).max(100) });
 export const customSymptomRequestSchema = z.object({ name: z.string().trim().min(1).max(120), category: symptomCategorySchema });

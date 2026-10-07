@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { formatDateTyping, parseUserDate } from './dateInput';
+import { formatDateTyping, formatLocalDate, formatPickerDate, parseUserDate } from './dateInput';
 
 describe('parseUserDate', () => {
   it.each([
@@ -24,5 +24,20 @@ describe('formatDateTyping', () => {
     expect(formatDateTyping('1/5/2026', 'insertFromPaste')).toBe('1/5/2026');
     expect(formatDateTyping('1/5', 'deleteContentBackward')).toBe('1/5');
     expect(formatDateTyping('1/5/2026', 'insertText', false)).toBe('1/5/2026');
+  });
+});
+
+describe('formatPickerDate', () => {
+  it.each([
+    ['2026-01-05', '1/5/2026'],
+    ['2026-09-02', '9/2/2026'],
+  ])('formats picker value %s as natural date %s', (input, expected) => expect(formatPickerDate(input)).toBe(expected));
+
+  it('rejects a non-picker value', () => expect(formatPickerDate('9/2/2026')).toBe(''));
+});
+
+describe('formatLocalDate', () => {
+  it('uses local calendar parts rather than UTC conversion', () => {
+    expect(formatLocalDate(new Date(2026, 8, 29, 23, 30))).toBe('2026-09-29');
   });
 });

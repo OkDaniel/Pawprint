@@ -4,19 +4,20 @@ import { useAuth } from '../../auth/useAuth';
 import styles from './AuthPage.module.css';
 
 export function AuthPage({ mode }: { mode: 'login' | 'register' }) {
-  const { user, login, register } = useAuth();
+  const { user, loading, login, register } = useAuth();
   const navigate = useNavigate();
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [submitting, setSubmitting] = useState(false);
-  if (user) return <Navigate to="/app" replace />;
+  if (loading) return <p role="status">Loading Pawprint…</p>;
+  if (user) return <Navigate to={user.onboardingCompleted ? '/app' : '/onboarding'} replace />;
 
   async function submit(event: FormEvent) {
     event.preventDefault(); setSubmitting(true); setError('');
     try {
       await (mode === 'login' ? login(username, password) : register(username, password));
-      navigate('/app', { replace: true });
+      navigate(mode === 'register' ? '/onboarding' : '/app', { replace: true });
     } catch (caught) { setError(caught instanceof Error ? caught.message : 'The request failed.'); }
     finally { setSubmitting(false); }
   }

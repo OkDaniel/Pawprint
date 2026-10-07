@@ -114,9 +114,23 @@ describe('TrackingLibraryRepository ownership and preferences', () => {
     expect(execute).toHaveBeenCalledWith(expect.stringContaining('f.is_active = TRUE'), [8, 8]);
   });
 
-  it('uses a trimmed case-insensitive duplicate comparison', async () => {
-    const execute = vi.fn(async () => [[{ id: 1 }]]);
-    await expect(new TrackingLibraryRepository({ execute } as unknown as Pool).activeDuplicateExists('feelings', 8, ' NUMB ')).resolves.toBe(true);
+  it('returns the canonical active duplicate using a trimmed case-insensitive comparison', async () => {
+    const execute = vi.fn(async () => [[{ name: 'Numb' }]]);
+    await expect(new TrackingLibraryRepository({ execute } as unknown as Pool).findActiveDuplicate('feelings', 8, ' NUMB ')).resolves.toEqual({ name: 'Numb' });
     expect(execute.mock.calls[0]?.[0]).toContain('LOWER(TRIM(name)) = LOWER(TRIM(?))');
+    expect(execute.mock.calls[0]?.[0]).toContain('is_active = TRUE');
+  });
+
+  it('finds Symptom duplicates across categories and returns the existing category', async () => {
+    const execute = vi.fn(async () => [[{ name: 'Stomach Pain', category: 'Physical Pain' }]]);
+    await expect(new TrackingLibraryRepository({ execute } as unknown as Pool).findActiveDuplicate('symptoms', 8, 'stomach pain')).resolves.toEqual({ name: 'Stomach Pain', category: 'Physical Pain' });
+    expect(execute.mock.calls[0]?.[0]).not.toContain('AND category = ?');
+    expect(execute.mock.calls[0]?.[1]).toEqual([8, 'stomach pain']);
+  });
+
+  it('does not treat an inactive private item as an active duplicate', async () => {
+    const execute = vi.fn(async () => [[]]);
+    await expect(new TrackingLibraryRepository({ execute } as unknown as Pool).findActiveDuplicate('factors', 8, 'Commute')).resolves.toBeNull();
+    expect(execute.mock.calls[0]?.[0]).toContain('is_active = TRUE');
   });
 });

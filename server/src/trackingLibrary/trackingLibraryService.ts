@@ -16,23 +16,26 @@ export class TrackingLibraryService {
   async setFactorPreferences(userId: number, ids: number[]): Promise<Factor[]> { await this.safePreferenceUpdate(() => this.repository.setFactorPreferences(userId, ids)); return this.repository.listFactors(userId); }
 
   async createFeeling(userId: number, name: string): Promise<Feeling[]> {
-    await this.rejectDuplicate('feelings', userId, name);
+    const trimmedName = name.trim();
+    await this.rejectDuplicate('feelings', userId, trimmedName);
     const pinned = (await this.repository.listFeelings(userId)).filter(({ isPinned }) => isPinned).map(({ id }) => id);
-    const id = await this.repository.createFeeling(userId, name);
+    const id = await this.repository.createFeeling(userId, trimmedName);
     await this.repository.setFeelingPreferences(userId, [...pinned, id]);
     return this.repository.listFeelings(userId);
   }
   async createSymptom(userId: number, name: string, category: SymptomCategory): Promise<Symptom[]> {
-    await this.rejectDuplicate('symptoms', userId, name, category);
+    const trimmedName = name.trim();
+    await this.rejectDuplicate('symptoms', userId, trimmedName);
     const pinned = (await this.repository.listSymptoms(userId, category)).filter(({ isPinned }) => isPinned).map(({ id }) => id);
-    const id = await this.repository.createSymptom(userId, name, category);
+    const id = await this.repository.createSymptom(userId, trimmedName, category);
     await this.repository.setSymptomPreferences(userId, category, [...pinned, id]);
     return this.repository.listSymptoms(userId, category);
   }
   async createFactor(userId: number, name: string, category: FactorCategory): Promise<Factor[]> {
-    await this.rejectDuplicate('factors', userId, name);
+    const trimmedName = name.trim();
+    await this.rejectDuplicate('factors', userId, trimmedName);
     const pinned = (await this.repository.listFactors(userId)).filter(({ isPinned }) => isPinned).map(({ id }) => id);
-    const id = await this.repository.createFactor(userId, `custom-${userId}-${randomUUID()}`, name, category);
+    const id = await this.repository.createFactor(userId, `custom-${userId}-${randomUUID()}`, trimmedName, category);
     await this.repository.setFactorPreferences(userId, [...pinned, id]);
     return this.repository.listFactors(userId);
   }
@@ -45,10 +48,16 @@ export class TrackingLibraryService {
     if (!await this.repository.deactivateCustom(kind, userId, id)) throw new AppError(404, 'CUSTOM_ITEM_NOT_FOUND', 'That custom item is unavailable.');
     return list();
   }
-  private async rejectDuplicate(kind: LibraryKind, userId: number, name: string, category?: SymptomCategory): Promise<void> {
-    if (await this.repository.activeDuplicateExists(kind, userId, name, category)) {
+  private async rejectDuplicate(kind: LibraryKind, userId: number, name: string): Promise<void> {
+    const duplicate = await this.repository.findActiveDuplicate(kind, userId, name);
+    if (duplicate) {
       const singular = kind === 'feelings' ? 'feeling' : kind === 'symptoms' ? 'symptom' : 'factor';
-      throw new AppError(409, 'DUPLICATE_CUSTOM_ITEM', `That ${singular} already exists.`);
+      const location = duplicate.category ? ` under ${duplicate.category}` : '';
+      throw new AppError(409, 'DUPLICATE_CUSTOM_ITEM', `${duplicate.name} already exists${location}. Select it from the list above instead.`, {
+        kind: singular,
+        name: duplicate.name,
+        ...(duplicate.category ? { category: duplicate.category } : {}),
+      });
     }
   }
   private async safePreferenceUpdate(operation: () => Promise<void>): Promise<void> {

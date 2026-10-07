@@ -54,10 +54,23 @@ Check the API directly at `http://localhost:3001/api/health`.
 - `npm run db:migrate` — apply only numbered migrations not previously recorded
 - `npm run db:seed` — safely upsert the built-in factor, feeling, and symptom libraries
 - `npm run db:verify` — verify tables, seed counts, and the factor-intensity column
+- `npm run db:seed-demo` — reset and regenerate deterministic local History data for only `pawprint_demo`
+
+## Development demo data
+
+After migrations and built-in seeds are current, run:
+
+```bash
+npm run db:seed-demo
+```
+
+This development-only command refuses to run when `NODE_ENV=production`. It deletes and recreates only the exact dedicated username `pawprint_demo`; it never resets another account. The recreated account is onboarding-complete and receives 45 logical days of deterministic, intentionally incomplete Check-In and Sleep history for History and future Insights testing.
+
+The local default password is `pawprint-demo-only`. Set `DEMO_USER_PASSWORD` in the uncommitted `.env` file to override it. Rerunning the command safely replaces the same synthetic account and produces the same relative pattern for the current ending logical date.
 
 ## Environment
 
-The server reads the repository-root `.env` file. For local MariaDB, configure `DB_HOST` and `DB_PORT`. On Turing, set `DB_SOCKET=/run/mysqld/mysqld.sock`; the connection utility prefers the socket when it is present. `APP_PORT` is configurable because production must use the administrator-assigned internal port. `APP_BASE_PATH` is reserved for the eventual Apache proxy path and defaults to `/`.
+The server reads the repository-root `.env` file. For local MariaDB, configure `DB_HOST` and `DB_PORT`. On Turing, set `DB_SOCKET=/run/mysqld/mysqld.sock`; the connection utility prefers the socket when it is present. `APP_PORT` is configurable because production must use the administrator-assigned internal port. `APP_BASE_PATH` is reserved for the eventual Apache proxy path and defaults to `/`. `APP_TIME_ZONE` is the application-wide IANA timezone used for the 4:00 AM logical-day boundary and defaults to `America/Chicago`. `DEMO_USER_PASSWORD` is used only by the development demo-data command.
 
 ## Repository layout
 

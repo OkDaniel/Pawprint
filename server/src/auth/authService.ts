@@ -1,5 +1,5 @@
 import { compare, hash } from 'bcryptjs';
-import type { AuthUser } from '@capstone/shared';
+import type { AuthUser, CatAppearanceKey } from '@capstone/shared';
 import { AppError } from '../errors/AppError.js';
 import { AuthRepository } from './authRepository.js';
 
@@ -24,11 +24,17 @@ export class AuthService {
     if (!user || !(await compare(password, user.passwordHash))) {
       throw new AppError(401, 'INVALID_CREDENTIALS', 'Username or password is incorrect.');
     }
-    return { id: user.id, username: user.username };
+    return { id: user.id, username: user.username, catAppearance: user.catAppearance, catName: user.catName, onboardingCompleted: user.onboardingCompleted };
   }
 
   async currentUser(id: number): Promise<AuthUser> {
     const user = await this.repository.findById(id);
+    if (!user) throw new AppError(401, 'AUTH_REQUIRED', 'Please log in.');
+    return user;
+  }
+
+  async updateCompanion(id: number, catAppearance: CatAppearanceKey, catName: string): Promise<AuthUser> {
+    const user = await this.repository.updateCompanion(id, catAppearance, catName);
     if (!user) throw new AppError(401, 'AUTH_REQUIRED', 'Please log in.');
     return user;
   }

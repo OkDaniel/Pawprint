@@ -8,7 +8,7 @@ const SHEET_WIDTH = 118;
 const SHEET_HEIGHT = 106;
 
 const glyphCoordinates = {
-  C: [19, 1], E: [37, 1], H: [64, 1], I: [73, 1], K: [91, 1], N: [1, 16],
+  C: [19, 1], E: [37, 1], G: [55, 1], H: [64, 1], I: [73, 1], K: [91, 1], N: [1, 16],
   O: [10, 16], R: [37, 16], S: [46, 16], T: [55, 16], Y: [100, 16],
 } as const;
 
@@ -36,6 +36,12 @@ export function CheckInPixelLabel() {
 export function HistoryPixelLabel() {
   return <span className={styles.text!} aria-hidden="true" data-pixel-text="HISTORY">
     <span className={styles.word!}>{toGlyphs('HISTORY')}</span>
+  </span>;
+}
+
+export function InsightsPixelLabel() {
+  return <span className={styles.text!} aria-hidden="true" data-pixel-text="INSIGHTS">
+    <span className={styles.word!}>{toGlyphs('INSIGHTS')}</span>
   </span>;
 }
 

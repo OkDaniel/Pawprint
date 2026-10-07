@@ -132,6 +132,13 @@ describe('CheckInRepository ownership', () => {
     await expect(repository.accessibleSymptomIdsForUpdate(7, 42, [8])).resolves.toEqual([8]);
     expect(execute).toHaveBeenCalledWith(expect.stringMatching(/EXISTS.*link\.check_in_id = \?.*ci\.user_id = \?/s), [8, 7, 42, 7]);
   });
+
+  it('resolves unavailable-item names only for built-ins or definitions owned by the user', async () => {
+    const execute = vi.fn(async () => [[{ id: 8, name: 'Mania' }]]);
+    const repository = new CheckInRepository({ execute } as unknown as Pool);
+    await expect(repository.ownedLibraryItems('symptoms', 7, [8])).resolves.toEqual([{ id: 8, name: 'Mania' }]);
+    expect(execute).toHaveBeenCalledWith(expect.stringMatching(/created_by_user_id = \?/), [8, 7]);
+  });
 });
 
 describe('CheckInRepository transactional update', () => {
