@@ -1,0 +1,10 @@
+.scene { position: relative; width: 100%; aspect-ratio: 1; isolation: isolate; }
+.background { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; image-rendering: pixelated; pointer-events: none; }
+.objects { position: absolute; inset: 0; z-index: 1; pointer-events: none; }
+.decoration, .cat { position: absolute; }
+.decoration img { display: block; width: 100%; height: 100%; image-rendering: pixelated; pointer-events: none; }
+.cat { width: 18.75%; height: 18.75%; pointer-events: none; }
+.cat > span { width: 100%; height: 100%; }
+.selected img { filter: drop-shadow(1px 0 #364f32) drop-shadow(-1px 0 #364f32) drop-shadow(0 1px #364f32) drop-shadow(0 -1px #364f32); }
+.hitTarget { position: absolute; inset: 0; min-width: 24px; min-height: 24px; border: 0; padding: 0; background: transparent; cursor: pointer; pointer-events: auto; }
+.hitTarget:focus-visible { outline: 2px solid var(--accent-strong); }

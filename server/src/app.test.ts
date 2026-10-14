@@ -1,6 +1,6 @@
 import request from 'supertest';
 import { describe, expect, it } from 'vitest';
-import { createApp } from './app.js';
+import { createApp, shouldRegisterDevCoinGrants } from './app.js';
 
 describe('GET /api/health', () => {
   it('returns the service health envelope', async () => {
@@ -11,7 +11,7 @@ describe('GET /api/health', () => {
 });
 
 describe('private API authorization', () => {
-  it.each(['/api/check-ins', '/api/factors', '/api/feelings', '/api/symptoms?category=Mental', '/api/insights/mood-trend', '/api/auth/me'])('rejects anonymous access to %s', async (path) => {
+  it.each(['/api/check-ins', '/api/factors', '/api/feelings', '/api/symptoms?category=Mental', '/api/insights/mood-trend', '/api/economy/wallet', '/api/economy/catalog', '/api/economy/coats', '/api/room/floor-layout', '/api/auth/me'])('rejects anonymous access to %s', async (path) => {
     await request(createApp()).get(path).expect(401);
   });
   it('rejects anonymous onboarding completion', async () => {
@@ -28,5 +28,16 @@ describe('private API authorization', () => {
   it('rejects anonymous preference updates and custom-item deactivation', async () => {
     await request(createApp()).put('/api/feelings/preferences').send({ ids: [] }).expect(401);
     await request(createApp()).delete('/api/feelings/1').expect(401);
+  });
+  it('does not register development grants by default', async () => {
+    await request(createApp()).post('/api/dev/coins/grants').send({}).expect(404);
+  });
+});
+
+describe('development coin grant registration', () => {
+  it('never registers in production even if the flag is accidentally true', () => {
+    expect(shouldRegisterDevCoinGrants('production', true)).toBe(false);
+    expect(shouldRegisterDevCoinGrants('development', true)).toBe(true);
+    expect(shouldRegisterDevCoinGrants('test', false)).toBe(false);
   });
 });

@@ -55,6 +55,12 @@ interface ProtectedUserRow extends RowDataPacket {
   custom_feelings: number | string;
   custom_symptoms: number | string;
   custom_factors: number | string;
+  wallet_balance: number | string | null;
+  coin_transactions: number | string;
+  cat_coats: number | string;
+  decoration_instances: number | string;
+  room_layouts: number | string;
+  floor_placements: number | string;
 }
 
 export interface OwnedDataCounts {
@@ -155,6 +161,8 @@ async function createDemoUser(connection: PoolConnection, passwordHash: string):
      VALUES (?, ?, ?, ?, CURRENT_TIMESTAMP)`,
     [DEMO_USERNAME, passwordHash, DEMO_CAT_APPEARANCE, DEMO_CAT_NAME],
   );
+  await connection.execute('INSERT INTO user_wallets (user_id, coin_balance) VALUES (?, 0)', [result.insertId]);
+  await connection.execute('INSERT INTO user_cat_coats (user_id, coat_id) VALUES (?, ?)', [result.insertId, DEMO_CAT_APPEARANCE]);
   return result.insertId;
 }
 
@@ -310,6 +318,12 @@ async function verifyPersistedScenario(
   assert(demoUser.cat_appearance_key === DEMO_CAT_APPEARANCE, 'The demo appearance was not persisted correctly.');
   assert(demoUser.cat_name === DEMO_CAT_NAME, 'The demo companion name was not persisted correctly.');
   assert(demoUser.onboarding_completed_at != null, 'The demo user is not onboarding-complete.');
+  assert(await count(connection, 'SELECT COUNT(*) AS count FROM user_wallets WHERE user_id = ? AND coin_balance = 0', [userId]) === 1,
+    'The demo user must have one zero-balance wallet without inferred historical rewards.');
+  assert(await count(connection, 'SELECT COUNT(*) AS count FROM user_cat_coats WHERE user_id = ? AND coat_id = ?', [userId, DEMO_CAT_APPEARANCE]) === 1,
+    'The demo user must own exactly its equipped coat.');
+  assert(await count(connection, 'SELECT COUNT(*) AS count FROM coin_transactions WHERE user_id = ?', [userId]) === 0,
+    'Synthetic historical Check-Ins must not grant demo coins.');
 
   const checkIns = await count(connection, 'SELECT COUNT(*) AS count FROM check_ins WHERE user_id = ?', [userId]);
   const moodRows = await count(connection, 'SELECT COUNT(*) AS count FROM check_in_moods m JOIN check_ins ci ON ci.id = m.check_in_id WHERE ci.user_id = ?', [userId]);
@@ -489,7 +503,13 @@ async function snapshotProtectedUsers(connection: PoolConnection): Promise<Prote
        (SELECT COUNT(*) FROM user_factor_preferences p WHERE p.user_id = u.id) AS factor_preferences,
        (SELECT COUNT(*) FROM feelings f WHERE f.created_by_user_id = u.id) AS custom_feelings,
        (SELECT COUNT(*) FROM symptoms s WHERE s.created_by_user_id = u.id) AS custom_symptoms,
-       (SELECT COUNT(*) FROM factors f WHERE f.created_by_user_id = u.id) AS custom_factors
+       (SELECT COUNT(*) FROM factors f WHERE f.created_by_user_id = u.id) AS custom_factors,
+       (SELECT coin_balance FROM user_wallets w WHERE w.user_id = u.id) AS wallet_balance,
+       (SELECT COUNT(*) FROM coin_transactions t WHERE t.user_id = u.id) AS coin_transactions,
+       (SELECT COUNT(*) FROM user_cat_coats c WHERE c.user_id = u.id) AS cat_coats,
+       (SELECT COUNT(*) FROM user_decoration_inventory i WHERE i.user_id = u.id) AS decoration_instances,
+       (SELECT COUNT(*) FROM user_room_layouts r WHERE r.user_id = u.id) AS room_layouts,
+       (SELECT COUNT(*) FROM room_floor_placements p WHERE p.user_id = u.id) AS floor_placements
      FROM users u WHERE u.username <> ? ORDER BY u.id`,
     [DEMO_USERNAME],
   );

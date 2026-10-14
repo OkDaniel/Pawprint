@@ -7,6 +7,7 @@ const repositoryRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url))
 loadDotEnv({ path: path.join(repositoryRoot, '.env') });
 
 const emptyStringToUndefined = (value: unknown) => value === '' ? undefined : value;
+const booleanFromString = (value: unknown) => value === 'true' ? true : value === 'false' || value === '' || value === undefined ? false : value;
 
 function isIanaTimeZone(value: string): boolean {
   try {
@@ -30,6 +31,11 @@ const envSchema = z.object({
   DB_NAME: z.string().min(1).default('capstone'),
   SESSION_SECRET: z.string().default('development-only-change-me'),
   DEMO_USER_PASSWORD: z.string().min(8).max(128).default('pawprint-demo-only'),
+  ECONOMY_REWARDS_START_AT: z.preprocess(
+    emptyStringToUndefined,
+    z.string().regex(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d{3})?Z$/, 'ECONOMY_REWARDS_START_AT must be an ISO-8601 UTC instant ending in Z.').refine((value) => !Number.isNaN(Date.parse(value)), 'ECONOMY_REWARDS_START_AT must be a real UTC instant.').optional(),
+  ),
+  ENABLE_DEV_COIN_GRANTS: z.preprocess(booleanFromString, z.boolean()).default(false),
 }).superRefine((value, context) => {
   if (value.NODE_ENV === 'production' && value.SESSION_SECRET.length < 32) {
     context.addIssue({ code: 'custom', path: ['SESSION_SECRET'], message: 'Production session secrets must be at least 32 characters.' });

@@ -19,7 +19,8 @@ export function createCheckInRouter(service = new CheckInService()): Router {
     response.json({ checkIn });
   });
   router.post('/', validateBody(createCheckInRequestSchema), async (request, response) => {
-    response.status(201).json({ checkIn: await service.create(request.session.userId!, request.body) });
+    const result = await service.create(request.session.userId!, request.body);
+    response.status(result.created ? 201 : 200).json({ checkIn: result.checkIn });
   });
   router.put('/:id', validateBody(updateCheckInRequestSchema), async (request, response) => {
     response.json({ checkIn: await service.update(request.session.userId!, parseId(request.params.id), request.body) });

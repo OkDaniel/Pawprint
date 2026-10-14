@@ -36,6 +36,13 @@ function TestCheckInCompletionTrigger() {
 }
 
 describe('App', () => {
+  it('opens the isolated development placement route anonymously without API writes', async () => {
+    const fetch = vi.spyOn(globalThis, 'fetch').mockResolvedValue(new Response(JSON.stringify({ error:{message:'Please log in.'} }),{status:401,headers:{'Content-Type':'application/json'}}));
+    render(<MemoryRouter initialEntries={['/build-preview']}><AuthProvider><App /></AuthProvider></MemoryRouter>);
+    expect(await screen.findByRole('heading',{name:'Development placement sandbox'})).toBeInTheDocument();
+    expect(screen.queryByRole('heading',{name:'Welcome back'})).not.toBeInTheDocument();
+    expect(fetch.mock.calls.every(([,options])=>!options?.method || options.method==='GET')).toBe(true);
+  });
   it('excludes the onboarding preview route from production mode', () => {
     expect(isOnboardingPreviewEnabled('production')).toBe(false);
     expect(isOnboardingPreviewEnabled('development')).toBe(true);
@@ -257,14 +264,14 @@ describe('App', () => {
     expect(screen.queryByText('Check-In complete. Mochi is cheering for you.')).not.toBeInTheDocument();
   });
 
-  it('updates the persisted appearance from the username account control and rerenders Home immediately', async () => {
+  it('retains cat-name editing in Account and directs coat management to Store', async () => {
     let updateBody: unknown;
     const fetchMock = vi.spyOn(globalThis, 'fetch').mockImplementation(async (input, init) => {
       const url = String(input);
       const headers = { 'Content-Type': 'application/json' };
       if (url === '/api/auth/me' && init?.method === 'PATCH') {
         updateBody = JSON.parse(String(init.body));
-        return new Response(JSON.stringify({ user: { id: 1, username: 'daniel', catAppearance: 'mochi-grey', catName: 'Luna', onboardingCompleted: true } }), { status: 200, headers });
+        return new Response(JSON.stringify({ user: { id: 1, username: 'daniel', catAppearance: 'mochi-orange', catName: 'Luna', onboardingCompleted: true } }), { status: 200, headers });
       }
       if (url === '/api/auth/me') return new Response(JSON.stringify({ user: { id: 1, username: 'daniel', catAppearance: 'mochi-orange', catName: 'Mochi', onboardingCompleted: true } }), { status: 200, headers });
       throw new Error(`Unexpected request: ${url}`);
@@ -275,20 +282,20 @@ describe('App', () => {
     const accountButton = screen.getByRole('button', { name: /daniel/ });
     fireEvent.click(accountButton);
     let dialog = screen.getByRole('dialog', { name: 'Account' });
-    expect(within(dialog).getByRole('radio', { name: /Orange/ })).toBeChecked();
+    expect(within(dialog).queryByRole('radio')).not.toBeInTheDocument();
+    expect(within(dialog).getByRole('link', { name: 'Manage cat coats in Store' })).toHaveAttribute('href', '/app/store');
     fireEvent.keyDown(document, { key: 'Escape' });
     expect(screen.queryByRole('dialog', { name: 'Account' })).not.toBeInTheDocument();
     expect(accountButton).toHaveFocus();
 
     fireEvent.click(accountButton);
     dialog = screen.getByRole('dialog', { name: 'Account' });
-    fireEvent.click(within(dialog).getByRole('radio', { name: /Grey/ }));
     fireEvent.change(within(dialog).getByLabelText('Cat name'), { target: { value: 'Luna' } });
     fireEvent.click(within(dialog).getByRole('button', { name: 'Save' }));
 
     await waitFor(() => expect(fetchMock).toHaveBeenCalledWith('/api/auth/me', expect.objectContaining({ method: 'PATCH' })));
-    expect(updateBody).toEqual({ catAppearance: 'mochi-grey', catName: 'Luna' });
-    expect(await screen.findByRole('img', { name: 'Grey Mochi the cat resting' })).toHaveAttribute('data-appearance', 'mochi-grey');
+    expect(updateBody).toEqual({ catAppearance: 'mochi-orange', catName: 'Luna' });
+    expect(await screen.findByRole('img', { name: 'Orange Mochi the cat resting' })).toHaveAttribute('data-appearance', 'mochi-orange');
     expect(screen.queryByRole('dialog', { name: 'Account' })).not.toBeInTheDocument();
   });
 

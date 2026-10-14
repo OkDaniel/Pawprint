@@ -4,11 +4,14 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import checkInHeart from '../../assets/ui/check-in-heart.png';
 import historyGameboy from '../../assets/ui/history-gameboy.png';
 import insightsMagnifier from '../../assets/ui/insights-magnifier.png';
-import room5 from '../../assets/room/room5.png';
-import { CheckInPixelLabel, HistoryPixelLabel, InsightsPixelLabel } from '../../components/PixelGlyph';
+import storePaw from '../../assets/brand/pawprint-mark.png';
+import { CheckInPixelLabel, HistoryPixelLabel, InsightsPixelLabel, StorePixelLabel } from '../../components/PixelGlyph';
 import { CatSprite } from './CatSprite';
 import { useAuth } from '../../auth/useAuth';
 import { DEFAULT_CAT_APPEARANCE, resolveCatAnimation } from './catCatalog';
+import { RoomScene } from '../room/RoomScene';
+import { useRoom } from '../room/roomContext';
+import { GameBoundary } from '../room/GameBoundary';
 
 const CHECK_IN_CELEBRATION_ANIMATION = 'excited';
 
@@ -20,6 +23,7 @@ interface HomeNavigationState {
 
 export function HomePage() {
   const { user } = useAuth();
+  const room = useRoom();
   const location = useLocation();
   const navigate = useNavigate();
   const completionState = location.state as HomeNavigationState | null;
@@ -64,23 +68,18 @@ export function HomePage() {
       </div>
       <div className={styles.room!}>
         <h1 id="cat-room-title" className={styles.roomTitle!}>Cat Room</h1>
-        <div className={styles.scene!} data-testid="cat-room-scene">
-          <img className={styles.roomBackground!} src={room5} alt="" aria-hidden="true" data-testid="room-background" />
-          {/* Future furniture and cat positions should use this room-relative layer. */}
-          <div className={styles.objectLayer!}>
-            <div className={styles.catPosition!}>
-              <CatSprite
+        <GameBoundary fallback={<RoomScene cat={<CatSprite appearance={catAppearance} />} />}>
+          <RoomScene placements={Array.isArray(room.data?.placements) ? room.data.placements : []} cat={<CatSprite
                 appearance={catAppearance}
                 animation={celebratingCheckIn ? CHECK_IN_CELEBRATION_ANIMATION : 'idle'}
                 loop={!celebratingCheckIn}
                 onAnimationEnd={() => setCelebratingCheckIn(false)}
-              />
-            </div>
-          </div>
+              />}>
           {celebratingCheckIn && <p className={styles.checkInCelebration!} role="status">
             Check-In complete. {user?.catName ?? 'Mochi'} is cheering for you.
           </p>}
-        </div>
+          </RoomScene>
+        </GameBoundary>
       </div>
       <div className={styles.rightActions!} data-home-action-region="right">
         <Link className={styles.homeAction!} to="/app/history" data-history-trigger>
@@ -88,6 +87,12 @@ export function HomePage() {
           <span className={styles.accessibleLabel!}>History</span>
           <HistoryPixelLabel />
         </Link>
+        <Link className={styles.homeAction!} to="/app/store" data-store-trigger>
+          <img src={storePaw} alt="" aria-hidden="true" />
+          <span className={styles.accessibleLabel!}>Store</span>
+          <StorePixelLabel />
+        </Link>
+        {room.error && <p className={styles.roomError!}>Room decorations couldn’t load. <button type="button" onClick={() => void room.reload()}>Retry room</button></p>}
       </div>
     </section>
   );

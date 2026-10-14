@@ -38,6 +38,8 @@ describe('OnboardingRepository atomic completion', () => {
     expect(execute).toHaveBeenCalledWith('DELETE FROM user_factor_preferences WHERE user_id = ?', [7]);
     expect(execute).toHaveBeenCalledWith(expect.stringContaining('user_feeling_preferences'), [7, 2, true, 0]);
     expect(execute).toHaveBeenCalledWith(expect.stringContaining('user_feeling_preferences'), [7, 1, false, 1]);
+    expect(execute).toHaveBeenCalledWith('DELETE FROM user_cat_coats WHERE user_id = ?', [7]);
+    expect(execute).toHaveBeenCalledWith('INSERT INTO user_cat_coats (user_id, coat_id) VALUES (?, ?)', [7, 'mochi-grey']);
     expect(execute).toHaveBeenCalledWith(expect.stringContaining('onboarding_completed_at = CURRENT_TIMESTAMP'), ['mochi-grey', 'Luna', 7]);
     expect(connection.commit).toHaveBeenCalledOnce();
     expect(connection.rollback).not.toHaveBeenCalled();

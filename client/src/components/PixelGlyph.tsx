@@ -45,6 +45,12 @@ export function InsightsPixelLabel() {
   </span>;
 }
 
+export function StorePixelLabel() {
+  return <span className={styles.text!} aria-hidden="true" data-pixel-text="STORE">
+    <span className={styles.word!}>{toGlyphs('STORE')}</span>
+  </span>;
+}
+
 function toGlyphs(word: string) {
   return [...word].map((character, index) => (
     <PixelGlyph key={`${character}-${index}`} character={character as PixelCharacter} />

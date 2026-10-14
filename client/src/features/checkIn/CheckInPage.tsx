@@ -31,6 +31,7 @@ export function CheckInPage() {
   const factorCustomizeButton = useRef<HTMLButtonElement>(null);
   const returnFocusTarget = useRef<Exclude<LibraryCustomization, null> | null>(null);
   const historicalLibraries = useRef<LibraryDraft>({ feelings: [], symptoms: [], factors: [] });
+  const createAttempt = useRef<{ fingerprint: string; requestId: string } | null>(null);
   const [step, setStep] = useState(0);
   const [mood, setMood] = useState<number | null>(null);
   const [feelingIds, setFeelingIds] = useState<number[]>([]);
@@ -141,11 +142,19 @@ export function CheckInPage() {
     try {
       const prepared = await prepareDraftForSave();
       const sleep = buildSleepInput(sleepQuality, bedtime, wakeTime);
-      await apiRequest<CheckInResponse>(editing ? `/api/check-ins/${checkInId}` : '/api/check-ins', { method: editing ? 'PUT' : 'POST', body: JSON.stringify({
+      const command = {
         mood, feelingIds: prepared.feelingIds, pain, symptoms: prepared.symptoms,
         factors: prepared.factors,
         ...(!editing && sleepTouched && sleep ? { sleep } : {}),
-      }) });
+      };
+      const fingerprint = JSON.stringify(command);
+      if (!editing && createAttempt.current?.fingerprint !== fingerprint) {
+        createAttempt.current = { fingerprint, requestId: crypto.randomUUID() };
+      }
+      await apiRequest<CheckInResponse>(editing ? `/api/check-ins/${checkInId}` : '/api/check-ins', {
+        method: editing ? 'PUT' : 'POST',
+        body: JSON.stringify(editing ? command : { ...command, clientRequestId: createAttempt.current!.requestId }),
+      });
       if (prepared.removedNames.length > 0) setSaveRecovery(`${formatItemNames(prepared.removedNames)} no longer available and ${prepared.removedNames.length === 1 ? 'was' : 'were'} removed from this draft.`);
       setSaved(true);
       await new Promise((resolve) => window.setTimeout(resolve, 650));
@@ -155,6 +164,7 @@ export function CheckInPage() {
       });
     } catch (caught) {
       if (caught instanceof ApiError && removeUnavailableFromDraft(caught)) {
+        createAttempt.current = null;
         setError(`${caught.message} It has been removed from this draft. Save again.`);
       } else setError(caught instanceof Error ? caught.message : 'Could not save this Check-In.');
       setSaving(false);

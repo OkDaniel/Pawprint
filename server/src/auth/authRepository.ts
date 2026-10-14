@@ -27,18 +27,56 @@ export class AuthRepository {
   }
 
   async create(username: string, passwordHash: string): Promise<AuthUser> {
-    const [result] = await this.pool.execute<ResultSetHeader>(
-      'INSERT INTO users (username, password_hash) VALUES (?, ?)', [username, passwordHash],
-    );
-    const user = await this.findById(result.insertId);
+    const connection = await this.pool.getConnection();
+    let userId: number;
+    try {
+      await connection.beginTransaction();
+      const [result] = await connection.execute<ResultSetHeader>(
+        'INSERT INTO users (username, password_hash) VALUES (?, ?)', [username, passwordHash],
+      );
+      userId = result.insertId;
+      await connection.execute(
+        "INSERT INTO user_cat_coats (user_id, coat_id) VALUES (?, 'mochi-classic')", [userId],
+      );
+      await connection.commit();
+    } catch (error) {
+      await connection.rollback();
+      throw error;
+    } finally {
+      connection.release();
+    }
+    const user = await this.findById(userId);
     if (!user) throw new Error('CREATED_USER_NOT_FOUND');
     return user;
   }
 
   async updateCompanion(id: number, catAppearance: CatAppearanceKey, catName: string): Promise<AuthUser | null> {
-    await this.pool.execute(
-      'UPDATE users SET cat_appearance_key = ?, cat_name = ? WHERE id = ?', [catAppearance, catName, id],
-    );
+    const connection = await this.pool.getConnection();
+    try {
+      await connection.beginTransaction();
+      const [users] = await connection.execute<Array<UserRow>>(
+        'SELECT id, onboarding_completed_at FROM users WHERE id = ? FOR UPDATE', [id],
+      );
+      const user = users[0];
+      if (!user) {
+        await connection.rollback();
+        return null;
+      }
+      if (user.onboarding_completed_at === null) throw new Error('ONBOARDING_REQUIRED');
+      const [owned] = await connection.execute<RowDataPacket[]>(
+        'SELECT coat_id FROM user_cat_coats WHERE user_id = ? AND coat_id = ? LIMIT 1', [id, catAppearance],
+      );
+      if (owned.length === 0) throw new Error('CAT_COAT_NOT_OWNED');
+      await connection.execute(
+        'UPDATE users SET cat_appearance_key = ?, cat_name = ? WHERE id = ?', [catAppearance, catName, id],
+      );
+      await connection.commit();
+    } catch (error) {
+      await connection.rollback();
+      throw error;
+    } finally {
+      connection.release();
+    }
     return this.findById(id);
   }
 }

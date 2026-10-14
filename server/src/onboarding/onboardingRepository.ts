@@ -53,6 +53,12 @@ export class OnboardingRepository {
         await insertPreferences(connection, 'user_symptom_preferences', 'symptom_id', userId, available, preference.ids);
       }
       await replacePreferences(connection, 'user_factor_preferences', 'factor_id', userId, factors.map(({ id }) => Number(id)), input.factorIds);
+      // Incomplete accounts can only have the provisional registration coat.
+      // Replace it atomically so onboarding grants exactly one free starter coat.
+      await connection.execute('DELETE FROM user_cat_coats WHERE user_id = ?', [userId]);
+      await connection.execute(
+        'INSERT INTO user_cat_coats (user_id, coat_id) VALUES (?, ?)', [userId, input.catAppearance],
+      );
       await connection.execute(
         `UPDATE users
          SET cat_appearance_key = ?, cat_name = ?, onboarding_completed_at = CURRENT_TIMESTAMP

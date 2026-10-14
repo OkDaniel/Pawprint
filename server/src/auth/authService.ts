@@ -34,7 +34,18 @@ export class AuthService {
   }
 
   async updateCompanion(id: number, catAppearance: CatAppearanceKey, catName: string): Promise<AuthUser> {
-    const user = await this.repository.updateCompanion(id, catAppearance, catName);
+    let user: AuthUser | null;
+    try {
+      user = await this.repository.updateCompanion(id, catAppearance, catName);
+    } catch (error) {
+      if (error instanceof Error && error.message === 'ONBOARDING_REQUIRED') {
+        throw new AppError(409, 'ONBOARDING_REQUIRED', 'Complete companion setup before changing coats.');
+      }
+      if (error instanceof Error && error.message === 'CAT_COAT_NOT_OWNED') {
+        throw new AppError(403, 'CAT_COAT_NOT_OWNED', 'You can only equip a coat you own.');
+      }
+      throw error;
+    }
     if (!user) throw new AppError(401, 'AUTH_REQUIRED', 'Please log in.');
     return user;
   }

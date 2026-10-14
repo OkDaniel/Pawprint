@@ -17,6 +17,20 @@ describe('POST /api/check-ins validation', () => {
     expect(response.body.error.code).toBe('VALIDATION_ERROR');
     expect(service.create).not.toHaveBeenCalled();
   });
+
+  it('returns 201 for a new request and 200 for an idempotent replay', async () => {
+    const checkIn = { id: 42 };
+    const service = { create: vi.fn()
+      .mockResolvedValueOnce({ checkIn, created: true })
+      .mockResolvedValueOnce({ checkIn, created: false }) } as unknown as CheckInService;
+    const app = express();
+    app.use(express.json());
+    app.use((incoming, _response, next) => { incoming.session = { userId: 7 } as typeof incoming.session; next(); });
+    app.use('/api/check-ins', createCheckInRouter(service)); app.use(errorHandler);
+    const body = { clientRequestId: '11111111-1111-4111-8111-111111111111', mood: 4, feelingIds: [], symptoms: [], factors: [] };
+    await request(app).post('/api/check-ins').send(body).expect(201);
+    await request(app).post('/api/check-ins').send(body).expect(200);
+  });
 });
 
 describe('Check-In reads and updates', () => {

@@ -1,3 +1,6 @@
+import { FLOOR_GRID_SUBDIVISIONS, MAX_FLOOR_PLACEMENTS } from './roomGeometry.js';
+export * from './floorCatalog.js';
+export * from './roomGeometry.js';
 import { z } from 'zod';
 
 export interface HealthResponse {
@@ -112,6 +115,7 @@ function validateUniqueCheckInChildren(value: { feelingIds: number[]; symptoms: 
 }
 
 export const createCheckInRequestSchema = checkInRequestBaseSchema.extend({
+  clientRequestId: z.uuid(),
   sleep: sleepInputSchema.optional(),
 }).superRefine(validateUniqueCheckInChildren);
 
@@ -196,3 +200,65 @@ export const customFeelingRequestSchema = z.object({ name: z.string().trim().min
 export const customSymptomRequestSchema = z.object({ name: z.string().trim().min(1).max(120), category: symptomCategorySchema });
 export const customFactorRequestSchema = z.object({ name: z.string().trim().min(1).max(100), category: factorCategorySchema });
 export interface ApiErrorResponse { error: { code: string; message: string; details?: unknown } }
+
+export const requestUuidSchema = z.uuid();
+export const purchaseRequestSchema = z.object({
+  productId: z.string().trim().min(1).max(100),
+  requestId: requestUuidSchema,
+});
+export const inventoryVariantRequestSchema = z.object({
+  variantId: z.string().trim().min(1).max(100),
+});
+export const floorPlacementInputSchema = z.object({
+  inventoryInstanceId: z.number().int().positive(),
+  gridU: z.number().int().min(0).max(FLOOR_GRID_SUBDIVISIONS),
+  gridV: z.number().int().min(0).max(FLOOR_GRID_SUBDIVISIONS),
+});
+export const floorLayoutRequestSchema = z.object({
+  placements: z.array(floorPlacementInputSchema).max(MAX_FLOOR_PLACEMENTS),
+}).superRefine(({ placements }, context) => {
+  const ids = placements.map(({ inventoryInstanceId }) => inventoryInstanceId);
+  if (new Set(ids).size !== ids.length) {
+    context.addIssue({ code: 'custom', message: 'Inventory instances must be unique.', path: ['placements'] });
+  }
+});
+export const devCoinGrantRequestSchema = z.object({
+  amount: z.number().int().positive().max(1000),
+  requestId: requestUuidSchema,
+});
+
+export interface Wallet { balance: number }
+export interface WalletResponse { wallet: Wallet }
+export interface StoreProduct {
+  id: string;
+  kind: 'coat' | 'decoration';
+  price: number | null;
+  purchasable: boolean;
+  retired: boolean;
+}
+export interface StoreCatalogResponse { products: StoreProduct[]; devCoinGrantsEnabled: boolean }
+export interface OwnedCoatsResponse { coats: CatAppearanceKey[] }
+export interface PurchaseResult {
+  transactionId: number;
+  productId: string;
+  balance: number;
+  inventoryInstanceId?: number;
+  coatId?: CatAppearanceKey;
+}
+export interface PurchaseResponse { purchase: PurchaseResult }
+export interface DecorationInventoryInstance {
+  instanceId: number;
+  productId: string;
+  selectedVariantId: string;
+  purchaseTransactionId: number;
+  acquiredAt: string;
+}
+export interface InventoryResponse { inventory: DecorationInventoryInstance[] }
+export interface InventoryInstanceResponse { instance: DecorationInventoryInstance }
+export type FloorPlacementInput = z.output<typeof floorPlacementInputSchema>;
+export interface FloorPlacement extends FloorPlacementInput {
+  productId: string;
+  selectedVariantId: string;
+}
+export interface FloorLayoutResponse { placements: FloorPlacement[] }
+export interface EconomySyncResponse { inspectedDates: string[]; rewardsGranted: number }

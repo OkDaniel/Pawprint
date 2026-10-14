@@ -1,0 +1,1001 @@
+{
+  "source": "CatMegaFree/CatMegaBundle/CatMegaBundle/CatItems/Decorations/CatRoomDecorations.png",
+  "sourceSha256": "6826bbe6416370afc10bb7d3aa5766e5057b44b171713275be48a8ec1103ddfd",
+  "variants": {
+    "decor_yarn_ball_sage": {
+      "asset": "room_decor_003_v01.png",
+      "sourceRect": {
+        "x": 454,
+        "y": 6,
+        "width": 22,
+        "height": 20
+      },
+      "excludeNeighborPixels": [],
+      "pixelSha256": "67f4e1f168260ab16e81b8e5f0d86b1d357808065755c1da962559f21319417d",
+      "pngSha256": "27b15261e0eb29655fc6fa133ca91ff29546a7c49078e65a9c133c5d4901c238"
+    },
+    "decor_yarn_ball_slate": {
+      "asset": "room_decor_003_v02.png",
+      "sourceRect": {
+        "x": 519,
+        "y": 7,
+        "width": 22,
+        "height": 20
+      },
+      "excludeNeighborPixels": [],
+      "pixelSha256": "ba9fdfa19860b1013e84accab55166f8b371d2a5acaa492be69346eb14f97bda",
+      "pngSha256": "ca6efd5b22cab30807198bebced946c3c6e71a946c0d7fc60ec90b1754f92c64"
+    },
+    "decor_yarn_ball_sky_blue": {
+      "asset": "room_decor_003_v03.png",
+      "sourceRect": {
+        "x": 454,
+        "y": 39,
+        "width": 22,
+        "height": 20
+      },
+      "excludeNeighborPixels": [],
+      "pixelSha256": "71355a3aaecb36408f4051bdec00d0c5da8db2cd585572f0c0f5ea25d1bed27e",
+      "pngSha256": "ce7284aa88ff02edb17a1d173373a44bd597511df9758022b376be88c92cdfbe"
+    },
+    "decor_yarn_ball_cream": {
+      "asset": "room_decor_003_v04.png",
+      "sourceRect": {
+        "x": 519,
+        "y": 40,
+        "width": 22,
+        "height": 20
+      },
+      "excludeNeighborPixels": [],
+      "pixelSha256": "18882bc3e4f77659e96e746aecd76310f927192afc3671127406a95e8c5d64c8",
+      "pngSha256": "e1c780fcc548fc120781cb27986facadd1ef02afc552afcafc0ccb0b23b1a60b"
+    },
+    "decor_yarn_ball_red": {
+      "asset": "room_decor_003_v05.png",
+      "sourceRect": {
+        "x": 454,
+        "y": 72,
+        "width": 22,
+        "height": 20
+      },
+      "excludeNeighborPixels": [],
+      "pixelSha256": "b06ed532ccf8d1c65b03e323fcea0755efacc575c4b645cfa4b1e3d585dbf904",
+      "pngSha256": "3d76fa46db53d8c6fc9302715080fddb535a7ef1ac6094316edb90a862429092"
+    },
+    "decor_yarn_ball_grey": {
+      "asset": "room_decor_003_v06.png",
+      "sourceRect": {
+        "x": 519,
+        "y": 73,
+        "width": 22,
+        "height": 20
+      },
+      "excludeNeighborPixels": [],
+      "pixelSha256": "8706ea0a6fc37e5c22f2c4174c7fe3c09b81b4738af9d0d92357917eec811f94",
+      "pngSha256": "55b40d2033fdfd62fada785be43eb880f8d58cb256c04ace266fe3378003ca82"
+    },
+    "decor_yarn_ball_teal": {
+      "asset": "room_decor_003_v07.png",
+      "sourceRect": {
+        "x": 454,
+        "y": 105,
+        "width": 22,
+        "height": 20
+      },
+      "excludeNeighborPixels": [],
+      "pixelSha256": "bce6a66f069b2def80a3d1a35aa774f9023fe828e78b341fe28f729bc1d35100",
+      "pngSha256": "a4c357ea43872ee13befc127a43a24996e44a4843d9c2e47842f6728d43c8117"
+    },
+    "decor_yarn_ball_indigo": {
+      "asset": "room_decor_003_v08.png",
+      "sourceRect": {
+        "x": 519,
+        "y": 106,
+        "width": 22,
+        "height": 20
+      },
+      "excludeNeighborPixels": [],
+      "pixelSha256": "7b7abe89bdf2790ff96658e3a9abb9d960d280d2afa5b67e715d126bc29cf3b3",
+      "pngSha256": "dd1311eb66d36d94ca975c305f093c8bb8fe519d2f2c200acc2dcebeb34eec82"
+    },
+    "decor_yarn_ball_plum": {
+      "asset": "room_decor_003_v09.png",
+      "sourceRect": {
+        "x": 453,
+        "y": 134,
+        "width": 22,
+        "height": 20
+      },
+      "excludeNeighborPixels": [],
+      "pixelSha256": "0981c7bfe1e4a0967a2ecacbb3ad7ea1b1fb4979706791adb456afcb6e860931",
+      "pngSha256": "8ec1b3ecc2f4aeb29228e1b5d49869ee9777a8fd646ba17f95fbdbb4f21c2132"
+    },
+    "decor_yarn_ball_olive": {
+      "asset": "room_decor_003_v10.png",
+      "sourceRect": {
+        "x": 518,
+        "y": 135,
+        "width": 22,
+        "height": 20
+      },
+      "excludeNeighborPixels": [],
+      "pixelSha256": "25e1b1c3de9730d21c2a755a21b57fa1b3693117fae0aab351284ac01f263f6b",
+      "pngSha256": "59ad3b9623d5f9c820649cd81aa521be15d2c41e42cf559ad90271e888ecb3a6"
+    },
+    "decor_yarn_ball_gold": {
+      "asset": "room_decor_003_v11.png",
+      "sourceRect": {
+        "x": 453,
+        "y": 167,
+        "width": 22,
+        "height": 20
+      },
+      "excludeNeighborPixels": [],
+      "pixelSha256": "67213b7051cb55dcbb6f2fd1c30e38f26cdbcf3482221a4e2ac53eeadf6da6dc",
+      "pngSha256": "209bdad57c6b1edbe3f96febfdb3ae9015c6381cde39d4d7fa24e736abb27ec5"
+    },
+    "decor_yarn_ball_purple": {
+      "asset": "room_decor_003_v12.png",
+      "sourceRect": {
+        "x": 518,
+        "y": 168,
+        "width": 22,
+        "height": 20
+      },
+      "excludeNeighborPixels": [],
+      "pixelSha256": "5d4156ba241f76c600a13536b4e58728380a1e7d1f96ca3b82e8c1d0d655b265",
+      "pngSha256": "fbb2add42b34bc837c31de8ecf06279024a4fa6d82b74a63cee0f9d334175533"
+    },
+    "decor_cat_tree_multilevel_cream": {
+      "asset": "room_decor_006_v01.png",
+      "sourceRect": {
+        "x": 582,
+        "y": 16,
+        "width": 85,
+        "height": 175
+      },
+      "excludeNeighborPixels": [],
+      "pixelSha256": "29d099aa0660c45e2a811286fa59f659bcd468541442b161a06ac23000ac132c",
+      "pngSha256": "869110041f5bf388a10fa8562adce2400589930161c5591d89d99bb5e6c94c7f"
+    },
+    "decor_cat_tree_multilevel_aqua": {
+      "asset": "room_decor_006_v02.png",
+      "sourceRect": {
+        "x": 681,
+        "y": 16,
+        "width": 85,
+        "height": 175
+      },
+      "excludeNeighborPixels": [],
+      "pixelSha256": "c2627b5bbb24a472b133811b42b6b8098e5d830c9c1e0aaacb655dc2a9c94068",
+      "pngSha256": "b4b00eec1b26ba70ab4ffcc7d075261bc2b864fb066125a74dfb6196f2d9e912"
+    },
+    "decor_cat_tree_multilevel_lavender": {
+      "asset": "room_decor_006_v03.png",
+      "sourceRect": {
+        "x": 771,
+        "y": 15,
+        "width": 85,
+        "height": 175
+      },
+      "excludeNeighborPixels": [],
+      "pixelSha256": "ca476440d07779fe02c18ce196e7fb78050e7e0b09727aa4233639b8798e7e71",
+      "pngSha256": "e3fc5f7daa17097daba8cf71af37c59b41e183fb3617cb0c9eb9605d4cad4783"
+    },
+    "decor_cat_bed_cushioned_blue": {
+      "asset": "room_decor_007_v01.png",
+      "sourceRect": {
+        "x": 202,
+        "y": 138,
+        "width": 110,
+        "height": 82
+      },
+      "excludeNeighborPixels": [],
+      "pixelSha256": "cc92f0b3c94eeb6fdfbbbf35e4f89de38a4302a16b891db474e4c78dfc18e783",
+      "pngSha256": "4f623f0697875017df0e3c9ccf0d09177a825518437839fa184ff2a12c212845"
+    },
+    "decor_cat_bed_cushioned_grey": {
+      "asset": "room_decor_007_v02.png",
+      "sourceRect": {
+        "x": 329,
+        "y": 138,
+        "width": 110,
+        "height": 82
+      },
+      "excludeNeighborPixels": [],
+      "pixelSha256": "e1a690ddfbbbf442c4ac141c6a0e5980a1ea70dcc21e9b4848820fe5f4684b03",
+      "pngSha256": "4818c1e0a8df8135c74cbc636c9d80680d6344b241555a8aacd8812371c548f8"
+    },
+    "decor_cat_bed_cushioned_rose": {
+      "asset": "room_decor_007_v03.png",
+      "sourceRect": {
+        "x": 202,
+        "y": 236,
+        "width": 110,
+        "height": 82
+      },
+      "excludeNeighborPixels": [],
+      "pixelSha256": "ea0d16a4aa44deab1ce2f3f262199b09c11be885d5053fe696657476c78c27bd",
+      "pngSha256": "6d83270dd0cc39108f3383dfdce954b93ae142105debc5a581a2200e5ff36912"
+    },
+    "decor_cat_bed_cushioned_olive": {
+      "asset": "room_decor_007_v04.png",
+      "sourceRect": {
+        "x": 329,
+        "y": 236,
+        "width": 110,
+        "height": 82
+      },
+      "excludeNeighborPixels": [],
+      "pixelSha256": "8740b2ca0234ac25aba35690fe0f775398ec66df8e3ea4e5089a27c21c271828",
+      "pngSha256": "b3d43725572d78bf0c5199f2049f845d071fb998160c1a63afc3528f8fce80c5"
+    },
+    "decor_cat_bed_cushioned_purple": {
+      "asset": "room_decor_007_v05.png",
+      "sourceRect": {
+        "x": 202,
+        "y": 326,
+        "width": 110,
+        "height": 82
+      },
+      "excludeNeighborPixels": [],
+      "pixelSha256": "ae69a2691855856826f3517bc0e253de97db01f3203c48487ffc97afa8ce836a",
+      "pngSha256": "cbb8517dbebf18217b3d079e729b88a590e5125e8f5a0a8afc06e9f86cf6ab0b"
+    },
+    "decor_cat_bed_cushioned_teal": {
+      "asset": "room_decor_007_v06.png",
+      "sourceRect": {
+        "x": 329,
+        "y": 326,
+        "width": 110,
+        "height": 82
+      },
+      "excludeNeighborPixels": [],
+      "pixelSha256": "2780ec3a48717227839f609a7c405c3981f203f665b22dd61b8a7bc1980892ce",
+      "pngSha256": "7b475c5c9e5b9bf6606d9b901cfceed6746be62e6cc38114464498fd6c8c2b2a"
+    },
+    "decor_plant_small_potted_rose": {
+      "asset": "room_decor_008_v01.png",
+      "sourceRect": {
+        "x": 132,
+        "y": 193,
+        "width": 23,
+        "height": 29
+      },
+      "excludeNeighborPixels": [],
+      "pixelSha256": "258ebd20f5a94cb396497c0d780c5bd4da6855bb3960ead36736c5548799c7cc",
+      "pngSha256": "49ba48f91a3a2920675cfe53cedbb3cbf6b6e214ee7fda4823dc397a3b15a980"
+    },
+    "decor_plant_small_potted_grey": {
+      "asset": "room_decor_008_v02.png",
+      "sourceRect": {
+        "x": 164,
+        "y": 193,
+        "width": 23,
+        "height": 29
+      },
+      "excludeNeighborPixels": [],
+      "pixelSha256": "ec8bceffa2f67ce9cee543bb555eceb5ff6a3fc5cee85582b1725e66154f596b",
+      "pngSha256": "6c0a770eaf44b18e597b1d8d0db2e4b4f48fd1ebb26f89c81d2e066a2183301a"
+    },
+    "decor_plant_small_potted_cream": {
+      "asset": "room_decor_008_v03.png",
+      "sourceRect": {
+        "x": 132,
+        "y": 226,
+        "width": 23,
+        "height": 29
+      },
+      "excludeNeighborPixels": [],
+      "pixelSha256": "92bec62a45296180dccf327bfba34351b5d313082077a00148d5c2e5cdc76d60",
+      "pngSha256": "2271b2c010422b7f4271f3df31f16faaac2f4e896b0f438c9095bf1f959284ac"
+    },
+    "decor_plant_small_potted_blue": {
+      "asset": "room_decor_008_v04.png",
+      "sourceRect": {
+        "x": 164,
+        "y": 226,
+        "width": 23,
+        "height": 29
+      },
+      "excludeNeighborPixels": [],
+      "pixelSha256": "62f836486b174b2e70ec78d27d49e2741c8dad644731493c94f921655796cc97",
+      "pngSha256": "4c335ce3a53cc6694cd0f92cb4c439f92b6927f6d6f68926e355838c33cc4663"
+    },
+    "decor_plant_small_potted_lime": {
+      "asset": "room_decor_008_v05.png",
+      "sourceRect": {
+        "x": 132,
+        "y": 258,
+        "width": 23,
+        "height": 29
+      },
+      "excludeNeighborPixels": [],
+      "pixelSha256": "b522a258c82f1da0526be1d09e02365985242ef43eda14c997abec6fff7b1c3f",
+      "pngSha256": "dea5f4c1cd4426706fd19aca44cd5904a09985c59421ebddb22c7f71d160fc8f"
+    },
+    "decor_plant_small_potted_indigo": {
+      "asset": "room_decor_008_v06.png",
+      "sourceRect": {
+        "x": 164,
+        "y": 258,
+        "width": 23,
+        "height": 29
+      },
+      "excludeNeighborPixels": [],
+      "pixelSha256": "72951b5304b333169c9ba52c82add6bf1570dbd4cb32454d231a1d6deeb74f52",
+      "pngSha256": "e8b89710068b89a9b779bbb162b8471b647f55f62af4807bd33998ff2f602012"
+    },
+    "decor_cat_tower_stair_honey": {
+      "asset": "room_decor_013_v01.png",
+      "sourceRect": {
+        "x": 559,
+        "y": 225,
+        "width": 111,
+        "height": 158
+      },
+      "excludeNeighborPixels": [],
+      "pixelSha256": "4b09d46ca27ace224125c7c6ae408468a5631e80f212d78b5760497e8446c494",
+      "pngSha256": "05c1929a65620147fcedca03368c4fdf0e17e37686e381e2956c6df6d7c7fd78"
+    },
+    "decor_cat_tower_stair_cream": {
+      "asset": "room_decor_013_v02.png",
+      "sourceRect": {
+        "x": 559,
+        "y": 385,
+        "width": 111,
+        "height": 158
+      },
+      "excludeNeighborPixels": [],
+      "pixelSha256": "1e40acff85d51c2fc17de326babea15f54d5772471202a860b924be7ee6afcc6",
+      "pngSha256": "9973f753cf7524f1c35006aa89ed579fb2127e2b63b4462f011da83ec778e095"
+    },
+    "decor_bookshelf_open_peach": {
+      "asset": "room_decor_014_v01.png",
+      "sourceRect": {
+        "x": 14,
+        "y": 289,
+        "width": 100,
+        "height": 128
+      },
+      "excludeNeighborPixels": [
+        [
+          55,
+          127
+        ],
+        [
+          56,
+          127
+        ],
+        [
+          57,
+          127
+        ],
+        [
+          58,
+          127
+        ],
+        [
+          59,
+          127
+        ]
+      ],
+      "pixelSha256": "7d89968f8da21698f140da2b033f33bfb0652b61940c77dd23cbb6c2b1106c22",
+      "pngSha256": "796f6fdcd7fed28775dfd51cfdff771600166c77785439882af50fca5d314dcf"
+    },
+    "decor_bookshelf_open_blue": {
+      "asset": "room_decor_014_v02.png",
+      "sourceRect": {
+        "x": 12,
+        "y": 416,
+        "width": 100,
+        "height": 129
+      },
+      "excludeNeighborPixels": [
+        [
+          40,
+          0
+        ],
+        [
+          41,
+          0
+        ],
+        [
+          42,
+          0
+        ],
+        [
+          43,
+          0
+        ],
+        [
+          44,
+          0
+        ],
+        [
+          45,
+          0
+        ],
+        [
+          46,
+          0
+        ],
+        [
+          47,
+          0
+        ],
+        [
+          54,
+          128
+        ],
+        [
+          55,
+          128
+        ],
+        [
+          56,
+          128
+        ],
+        [
+          57,
+          128
+        ],
+        [
+          58,
+          128
+        ]
+      ],
+      "pixelSha256": "9a912b3448b762bc93251e98aa8582c1dcdf646e4ae98a674df1842f6afa80f4",
+      "pngSha256": "d87b22ce4999897fee8476b2c2a5adb15f2d9524be810539410ea4c6861b75d3"
+    },
+    "decor_bookshelf_open_sage": {
+      "asset": "room_decor_014_v03.png",
+      "sourceRect": {
+        "x": 9,
+        "y": 544,
+        "width": 100,
+        "height": 128
+      },
+      "excludeNeighborPixels": [
+        [
+          40,
+          0
+        ],
+        [
+          41,
+          0
+        ],
+        [
+          42,
+          0
+        ],
+        [
+          43,
+          0
+        ],
+        [
+          44,
+          0
+        ],
+        [
+          45,
+          0
+        ],
+        [
+          46,
+          0
+        ],
+        [
+          47,
+          0
+        ]
+      ],
+      "pixelSha256": "46c913292252e9c41db71ca231cbca1062d4f5324717491095f12a91567dfb4f",
+      "pngSha256": "f8ce734d0c29ecd6256fb4da351a101989628edac44bcfb86838bcce51304cc1"
+    },
+    "decor_bookshelf_open_purple": {
+      "asset": "room_decor_014_v04.png",
+      "sourceRect": {
+        "x": 7,
+        "y": 673,
+        "width": 100,
+        "height": 127
+      },
+      "excludeNeighborPixels": [],
+      "pixelSha256": "7eda0d78a72d42b33b7bb62e5715098c859fb6bc8525158300291a508be0bf91",
+      "pngSha256": "8a6cd961faccdc88d0d4588b21cfd5ec3f31881e649740a47d52714a8035aac6"
+    },
+    "decor_bookshelf_open_sand": {
+      "asset": "room_decor_014_v05.png",
+      "sourceRect": {
+        "x": 7,
+        "y": 801,
+        "width": 100,
+        "height": 127
+      },
+      "excludeNeighborPixels": [],
+      "pixelSha256": "0104f93c4839424f1728a453c4d3a588c34f696fe30c174ebda5b45702aa9d2a",
+      "pngSha256": "aed41582a919b609092ecd0547025f2f2a7f6f7d221ed6e6d0aa88a7e3328a1f"
+    },
+    "decor_plant_large_potted_brown": {
+      "asset": "room_decor_015_v01.png",
+      "sourceRect": {
+        "x": 140,
+        "y": 299,
+        "width": 45,
+        "height": 108
+      },
+      "excludeNeighborPixels": [],
+      "pixelSha256": "8f1457bb11edcb2c04c60629fd5d58d7aa626a4c2d554e6c6494addce40549e7",
+      "pngSha256": "0a698bfcef47ab8801f7f2fed88234a5bb1f4bec64f0a2905f18b7dfeb27e33a"
+    },
+    "decor_plant_large_potted_navy": {
+      "asset": "room_decor_015_v02.png",
+      "sourceRect": {
+        "x": 140,
+        "y": 421,
+        "width": 45,
+        "height": 108
+      },
+      "excludeNeighborPixels": [],
+      "pixelSha256": "e7c95b40cb5d3acaeb461294f8b58cd67dedf770fc4bed2f34d6150cc157bda8",
+      "pngSha256": "6ad010366c9d2a10d3bf42e2372a3e93162b2c78838a8729933958fa114f04bc"
+    },
+    "decor_plant_large_potted_plum": {
+      "asset": "room_decor_015_v03.png",
+      "sourceRect": {
+        "x": 138,
+        "y": 552,
+        "width": 45,
+        "height": 108
+      },
+      "excludeNeighborPixels": [],
+      "pixelSha256": "f17f166097fff8b8dfc799b836768682da698ef4dade4e7354751d167a240573",
+      "pngSha256": "cad5244053f7c20c663189a54da7e8c6043515f4206aecef7eff50b36404274b"
+    },
+    "decor_plant_large_potted_blue": {
+      "asset": "room_decor_015_v04.png",
+      "sourceRect": {
+        "x": 138,
+        "y": 685,
+        "width": 45,
+        "height": 108
+      },
+      "excludeNeighborPixels": [],
+      "pixelSha256": "ee1efbe3031a23c7d6e82381a5019ecf0a64c538443a4a855db57df750e7c497",
+      "pngSha256": "60cc4f79f40e345293a57930d23ea3886152149bb4a012283bd96d06cc1d86ab"
+    },
+    "decor_scratching_post_round_cream": {
+      "asset": "room_decor_018_v01.png",
+      "sourceRect": {
+        "x": 198,
+        "y": 434,
+        "width": 55,
+        "height": 77
+      },
+      "excludeNeighborPixels": [],
+      "pixelSha256": "21c438d500baa7de7eba9d975fad50004810ee87216d4657d89cefa4cfb064cd",
+      "pngSha256": "37b91d75a88a2efd467971155f8f6e2b060ad5ed7c17a8415323b755c76890fb"
+    },
+    "decor_scratching_post_round_brown": {
+      "asset": "room_decor_018_v02.png",
+      "sourceRect": {
+        "x": 198,
+        "y": 528,
+        "width": 55,
+        "height": 77
+      },
+      "excludeNeighborPixels": [],
+      "pixelSha256": "3fd292c1714bc7128225dcca605c375324490d2ccbd7a2c0e63b3d6ba2d3310a",
+      "pngSha256": "77711728091831e2a0627137b562964e9447407abc2c191a0de8e58724863421"
+    },
+    "decor_bowl_blue": {
+      "asset": "room_decor_019_v13.png",
+      "sourceRect": {
+        "x": 268,
+        "y": 621,
+        "width": 43,
+        "height": 37
+      },
+      "excludeNeighborPixels": [],
+      "pixelSha256": "7eacf657b11383acfe6977a8b32272b759b13bdef2a70361b4e0927e6737c8dd",
+      "pngSha256": "76cef29dbc67f61bd6d0466edc36b3ab4840d0e89512bb9016d5fddb40c86419"
+    },
+    "decor_bowl_sand": {
+      "asset": "room_decor_019_v14.png",
+      "sourceRect": {
+        "x": 333,
+        "y": 621,
+        "width": 43,
+        "height": 37
+      },
+      "excludeNeighborPixels": [],
+      "pixelSha256": "e4cf5a93e364589167f3ebae440b6abf685eeccad836bec835e3930f2b522213",
+      "pngSha256": "afbbbab7a5e1364b8ba44a87f87e1c52413fa3cadfa82d598e2ad726304d48ac"
+    },
+    "decor_bowl_purple": {
+      "asset": "room_decor_019_v15.png",
+      "sourceRect": {
+        "x": 267,
+        "y": 686,
+        "width": 43,
+        "height": 37
+      },
+      "excludeNeighborPixels": [],
+      "pixelSha256": "72912cbe9670f0200144d2eff6db0baa93d93d5c6440f875ed3885724c68b641",
+      "pngSha256": "46dad633f1a4ef1ede7a9193a73fd46962942985adffe69a18b05d6c22d12b15"
+    },
+    "decor_bowl_white": {
+      "asset": "room_decor_019_v16.png",
+      "sourceRect": {
+        "x": 332,
+        "y": 686,
+        "width": 43,
+        "height": 37
+      },
+      "excludeNeighborPixels": [],
+      "pixelSha256": "25ff3384e2130fd028150055024615a86aed27317ebdd69c648a285a81b22926",
+      "pngSha256": "21d88a09ca4788e28f51c89235c68c4b0596bde8428b873138a75b1a602fbcce"
+    },
+    "decor_bowl_rose": {
+      "asset": "room_decor_019_v17.png",
+      "sourceRect": {
+        "x": 268,
+        "y": 749,
+        "width": 43,
+        "height": 37
+      },
+      "excludeNeighborPixels": [],
+      "pixelSha256": "a2a4a058db226e139d7e6ce495a3c82108343a42b77e39174bace9371eac222f",
+      "pngSha256": "2249899ed4e75d77159f9c8d2a418c4eac30e8f4680ff7f324b7e48e407b5c9a"
+    },
+    "decor_bowl_sage": {
+      "asset": "room_decor_019_v18.png",
+      "sourceRect": {
+        "x": 333,
+        "y": 749,
+        "width": 43,
+        "height": 37
+      },
+      "excludeNeighborPixels": [],
+      "pixelSha256": "f2d0d687ea1ccde8452641b5c668fb3ceec6ac4d18ba204dc6135b2cdb2fb533",
+      "pngSha256": "5073053e54c2349fc951e5e03b3aa4be2ca67a3da7617c30ea621033dd4e5c5b"
+    },
+    "decor_cat_perch_double_cream": {
+      "asset": "room_decor_020_v01.png",
+      "sourceRect": {
+        "x": 679,
+        "y": 484,
+        "width": 55,
+        "height": 92
+      },
+      "excludeNeighborPixels": [],
+      "pixelSha256": "58178a78efa7b3f3571642259dcc11247e61add77a19ccd187d3421e633136c0",
+      "pngSha256": "d1c0391cfb6fb4169504995af9f5d1225c67ebbe0d72874554f5811981c1eb25"
+    },
+    "decor_cat_perch_double_peach": {
+      "asset": "room_decor_020_v02.png",
+      "sourceRect": {
+        "x": 741,
+        "y": 484,
+        "width": 55,
+        "height": 92
+      },
+      "excludeNeighborPixels": [],
+      "pixelSha256": "8a51519a6dd198b0bc0210a4b1a249aa3d562a0e2eeb093d5a9baf623bde5408",
+      "pngSha256": "0d102afb354b0f9517e35a6856257d763ac060dcb6f352b7cc90e1ceb9548921"
+    },
+    "decor_cat_perch_double_blue": {
+      "asset": "room_decor_020_v03.png",
+      "sourceRect": {
+        "x": 805,
+        "y": 484,
+        "width": 55,
+        "height": 92
+      },
+      "excludeNeighborPixels": [],
+      "pixelSha256": "3b0acec3361b5571b4c6066243560361c5187bbf9d0102b227531ad96b7217e1",
+      "pngSha256": "caceec218418abb27d3e5a9544f2d2fa59206810c1bbf8ca46992705bf481a20"
+    },
+    "decor_cat_perch_double_rose": {
+      "asset": "room_decor_020_v04.png",
+      "sourceRect": {
+        "x": 869,
+        "y": 484,
+        "width": 55,
+        "height": 92
+      },
+      "excludeNeighborPixels": [],
+      "pixelSha256": "25b54cf17c63ea77878d199746d7c541debc55232523aa6651ba2b3141425625",
+      "pngSha256": "49c92f102f52e2c0be78e0dc0b03df9ce4d1ed3f5fc2ed9b02b1376f78c73c3c"
+    },
+    "decor_cat_perch_double_sage": {
+      "asset": "room_decor_020_v05.png",
+      "sourceRect": {
+        "x": 933,
+        "y": 484,
+        "width": 55,
+        "height": 92
+      },
+      "excludeNeighborPixels": [],
+      "pixelSha256": "00293fecde4d390a50653490c6be7cf785e5a238742610067000f32aca472468",
+      "pngSha256": "75fa5d1a12bcaade86de13943d0efeb39270299c1ca364052d3f4f85d22c858f"
+    },
+    "decor_table_low_square_cream": {
+      "asset": "room_decor_022_v01.png",
+      "sourceRect": {
+        "x": 674,
+        "y": 610,
+        "width": 61,
+        "height": 61
+      },
+      "excludeNeighborPixels": [],
+      "pixelSha256": "6ae491ec2070a9e11fe4201216a95d796372a5287d6b8b176bd32d366fec5191",
+      "pngSha256": "e7e8c7bb5f2d89ba1810d264655990f4c4cbc9f57522f6ed5df61920ec62621f"
+    },
+    "decor_table_low_square_grey": {
+      "asset": "room_decor_022_v02.png",
+      "sourceRect": {
+        "x": 738,
+        "y": 610,
+        "width": 61,
+        "height": 61
+      },
+      "excludeNeighborPixels": [],
+      "pixelSha256": "4dc3ad29e44bdf8293365f493afdd214c9c5973aa93798d2763503cf566c687f",
+      "pngSha256": "88f028d18299605bd907667214d956170c1037b08735430966576baac45bd9da"
+    },
+    "decor_table_low_square_rose": {
+      "asset": "room_decor_022_v03.png",
+      "sourceRect": {
+        "x": 802,
+        "y": 610,
+        "width": 61,
+        "height": 61
+      },
+      "excludeNeighborPixels": [],
+      "pixelSha256": "dc7cb8ec2ee6306170e3c64b56c7d0ab4d3ed16435174d2ffba79f50cd627b5c",
+      "pngSha256": "0e9d4c451a27e910fbb2ce48c62da3b5c1aa940cbeb9d09ee70ea924df7c5c53"
+    },
+    "decor_table_low_square_blue": {
+      "asset": "room_decor_022_v04.png",
+      "sourceRect": {
+        "x": 866,
+        "y": 610,
+        "width": 61,
+        "height": 61
+      },
+      "excludeNeighborPixels": [],
+      "pixelSha256": "bcd9c17b8942851d96d242b29fc905b305e39e2cb3435deb33efd978856fd71b",
+      "pngSha256": "b1898f1a0e6c8f846dbb37e22e14a1c5bf6f9976fe1012f68d9d279e1bb9ad54"
+    },
+    "decor_table_low_square_lavender": {
+      "asset": "room_decor_022_v05.png",
+      "sourceRect": {
+        "x": 930,
+        "y": 610,
+        "width": 61,
+        "height": 61
+      },
+      "excludeNeighborPixels": [],
+      "pixelSha256": "afe9d64c92e2c5210030dba711a03b618fba73131743329d48e7daa4a22a1408",
+      "pngSha256": "fdd20b538245c8e0e6a3fcf7b040bca73b299ed1dfc3218283bd2403354c4ef9"
+    },
+    "decor_tin_round_red": {
+      "asset": "room_decor_023_v01.png",
+      "sourceRect": {
+        "x": 551,
+        "y": 614,
+        "width": 18,
+        "height": 18
+      },
+      "excludeNeighborPixels": [],
+      "pixelSha256": "dd12fb7f0ca95ba6ca84dbf74aee49f09afb49388e911d87e016981dfcda0344",
+      "pngSha256": "54a87f5c242c9fe4cbdc4930659a0381fcfbbd8d0d32e06b0e058b65e69ac126"
+    },
+    "decor_tin_round_sand": {
+      "asset": "room_decor_023_v02.png",
+      "sourceRect": {
+        "x": 582,
+        "y": 614,
+        "width": 18,
+        "height": 18
+      },
+      "excludeNeighborPixels": [],
+      "pixelSha256": "d8620aaf5592e15e4e5bb82aa8541591d5b58079a3579936bb89072ef9f0e109",
+      "pngSha256": "0cea1f48c59c204dfda708f56488557f558afed547c28643db9df411949f0de1"
+    },
+    "decor_tin_round_grey": {
+      "asset": "room_decor_023_v03.png",
+      "sourceRect": {
+        "x": 615,
+        "y": 614,
+        "width": 18,
+        "height": 18
+      },
+      "excludeNeighborPixels": [],
+      "pixelSha256": "902f8907f57c224eaba94bcfbea98d4795c84cfe3aa5d978fc4d5dcbfa4ccbfb",
+      "pngSha256": "da5ede491b0e03353c5265e94eb588557d87988efbeed65aee451785f2032f00"
+    },
+    "decor_tin_round_pink": {
+      "asset": "room_decor_023_v04.png",
+      "sourceRect": {
+        "x": 647,
+        "y": 614,
+        "width": 18,
+        "height": 18
+      },
+      "excludeNeighborPixels": [],
+      "pixelSha256": "f20492269bb7fb09675164f08a413950c8711831a4ad5f0446a885929bb02010",
+      "pngSha256": "c8f68bc318e6acecc4f73d73a8e968e1e7d8a824b37936e5a84896cc5018962b"
+    },
+    "decor_tin_round_purple": {
+      "asset": "room_decor_023_v05.png",
+      "sourceRect": {
+        "x": 551,
+        "y": 647,
+        "width": 18,
+        "height": 18
+      },
+      "excludeNeighborPixels": [],
+      "pixelSha256": "0210a2fdaae92be0a8391ecf88b0c67593112f6fae7e49d14b65535cb21bc568",
+      "pngSha256": "458781bf86d76670a6abb956239e50e5c384df54fdbe0829c5a32e3c5c9b01ab"
+    },
+    "decor_tin_round_green": {
+      "asset": "room_decor_023_v06.png",
+      "sourceRect": {
+        "x": 582,
+        "y": 647,
+        "width": 18,
+        "height": 18
+      },
+      "excludeNeighborPixels": [],
+      "pixelSha256": "7802394fc536266752b7b2f6d32e3f7df248a37b244eae105206330ffdb7f386",
+      "pngSha256": "64bd72d63a76272a8bcc8feba1ef850111b7feca2dda0d0ebe08a0d6dc1c0805"
+    },
+    "decor_tin_round_navy": {
+      "asset": "room_decor_023_v07.png",
+      "sourceRect": {
+        "x": 615,
+        "y": 647,
+        "width": 18,
+        "height": 18
+      },
+      "excludeNeighborPixels": [],
+      "pixelSha256": "23744cbe10f574edb0fba8475697dcdf6f806021a821d994340bd00872312e2e",
+      "pngSha256": "8caaec894e2e3c6d5d81a93cabbc4d5c7cf93a84637b981e1bce21b1c4eb2479"
+    },
+    "decor_tin_round_teal": {
+      "asset": "room_decor_023_v08.png",
+      "sourceRect": {
+        "x": 647,
+        "y": 647,
+        "width": 18,
+        "height": 18
+      },
+      "excludeNeighborPixels": [],
+      "pixelSha256": "3422078428c3eb5fc3b57831b7e707109461b44fff03fb1fa5a2824d9abf15dd",
+      "pngSha256": "b222ef980d9746476f926d3332f47bc06183fa95892a2e5c422d542f6087fe03"
+    },
+    "decor_toy_block_multicolor": {
+      "asset": "room_decor_024_v01.png",
+      "sourceRect": {
+        "x": 198,
+        "y": 616,
+        "width": 19,
+        "height": 18
+      },
+      "excludeNeighborPixels": [],
+      "pixelSha256": "3f26861c41bc117d92c0f59960af729b8bcca4631435539ae575515f3612c9c8",
+      "pngSha256": "00d0c18a98972f9026cf4c30dad45260f144141cd35a6fd5c89f72b23349d34c"
+    },
+    "decor_toy_bone_tan": {
+      "asset": "room_decor_026_v01.png",
+      "sourceRect": {
+        "x": 519,
+        "y": 619,
+        "width": 18,
+        "height": 10
+      },
+      "excludeNeighborPixels": [],
+      "pixelSha256": "58960851f598caedbf02ab8e14d27a6a69ed9e691e5d2169159a1d11a1edd280",
+      "pngSha256": "9d2d3661d07d6eafe0863cab42d06450e2c6e43f788275fbb156520677bad7a1"
+    },
+    "decor_toy_bone_cream": {
+      "asset": "room_decor_026_v02.png",
+      "sourceRect": {
+        "x": 520,
+        "y": 651,
+        "width": 18,
+        "height": 10
+      },
+      "excludeNeighborPixels": [],
+      "pixelSha256": "1fed37710a3a82af06d33653e307f9f45425f1c341251e94a50f6c012c77c7ed",
+      "pngSha256": "1fc166468177e6c9460bf3345d81e3e6e344b2c3a3fce84b0fbb147f728312d9"
+    },
+    "decor_toy_mouse_plush_brown": {
+      "asset": "room_decor_027_v01.png",
+      "sourceRect": {
+        "x": 454,
+        "y": 623,
+        "width": 52,
+        "height": 33
+      },
+      "excludeNeighborPixels": [],
+      "pixelSha256": "03abb9d8505d491ad353bc64765ac896e030f8fda2d0ae125f470a66d9fc92ee",
+      "pngSha256": "d43a1071f69b03c814e44ee773638b16ef1ee594e8c9f17018a9f5004922e557"
+    },
+    "decor_cat_perch_tall_cream": {
+      "asset": "room_decor_028_v01.png",
+      "sourceRect": {
+        "x": 655,
+        "y": 676,
+        "width": 33,
+        "height": 90
+      },
+      "excludeNeighborPixels": [],
+      "pixelSha256": "ffaa5b6ed8a45ba741006b7fa77bd6ea9c2e4a324c50358f4044ededb946a892",
+      "pngSha256": "fbef57719b82c4916b05815035f5885ec4e24585966cad2ecfb2dac1e9bc11ce"
+    },
+    "decor_cat_perch_tall_mint": {
+      "asset": "room_decor_028_v02.png",
+      "sourceRect": {
+        "x": 720,
+        "y": 676,
+        "width": 33,
+        "height": 90
+      },
+      "excludeNeighborPixels": [],
+      "pixelSha256": "aa46ceacff5b47e914b342bee617ac54175829d85a4043c9b07e084e11658089",
+      "pngSha256": "239cb32404a4ba7e0ea057db71f1b2422776a3046c13bce8bd4c1077ddd2ad6b"
+    },
+    "decor_cat_perch_tall_blue": {
+      "asset": "room_decor_028_v03.png",
+      "sourceRect": {
+        "x": 848,
+        "y": 676,
+        "width": 33,
+        "height": 90
+      },
+      "excludeNeighborPixels": [],
+      "pixelSha256": "ffe9893e6109b15cb4851f413d7e67fc62be9d4538d77d995598ed3d77f8b97e",
+      "pngSha256": "8f49adcf79546f77626b6a7cc767f7bf704c0367292694a392f4802a2de43d94"
+    },
+    "decor_cat_perch_tall_lavender": {
+      "asset": "room_decor_028_v04.png",
+      "sourceRect": {
+        "x": 783,
+        "y": 677,
+        "width": 33,
+        "height": 90
+      },
+      "excludeNeighborPixels": [],
+      "pixelSha256": "246f7909e1e11893247acdc772cec489b968c4cd6d1931754951f7ce4c5cebd6",
+      "pngSha256": "125268f512d26a013980fd55f874913542e851dfb0ef20e10a945b38a103a8fc"
+    },
+    "decor_cat_perch_tall_rose": {
+      "asset": "room_decor_028_v05.png",
+      "sourceRect": {
+        "x": 912,
+        "y": 676,
+        "width": 33,
+        "height": 90
+      },
+      "excludeNeighborPixels": [],
+      "pixelSha256": "0fd7642e3b151518800dece334e250034f0454e066fbc63623209472e02773a7",
+      "pngSha256": "4f41d22c54d4b89c9e32e682d9764aef8df754f0ea2988ced7eac429a69ef921"
+    },
+    "decor_cat_perch_tall_peach": {
+      "asset": "room_decor_028_v06.png",
+      "sourceRect": {
+        "x": 976,
+        "y": 677,
+        "width": 33,
+        "height": 90
+      },
+      "excludeNeighborPixels": [],
+      "pixelSha256": "cebb28c9f5963344d06496a83d58f83162ff9468695bfb0bf0b39fa0b908f4a3",
+      "pngSha256": "ccf08c60df55aa5f9fd263aeb835b935633b00f45b7cbd385f9d33d79fd98d0d"
+    }
+  }
+}

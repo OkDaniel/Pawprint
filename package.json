@@ -13,11 +13,14 @@
     "start": "npm run start --workspace=@capstone/server",
     "lint": "npm run lint --workspaces --if-present",
     "test": "npm run test --workspaces --if-present",
+    "test:db-phase3": "npm run test:db-phase3 --workspace=@capstone/server",
     "typecheck": "npm run build --workspace=@capstone/shared && npm run typecheck --workspaces --if-present",
     "db:migrate": "npm run db:migrate --workspace=@capstone/server",
     "db:seed": "npm run db:seed --workspace=@capstone/server",
     "db:verify": "npm run db:verify --workspace=@capstone/server",
-    "db:seed-demo": "npm run db:seed-demo --workspace=@capstone/server"
+    "db:seed-demo": "npm run db:seed-demo --workspace=@capstone/server",
+    "db:repair-rewards": "npm run db:repair-rewards --workspace=@capstone/server --",
+    "db:verify-phase3": "npm run db:verify-phase3 --workspace=@capstone/server"
   },
   "devDependencies": {
     "concurrently": "^9.2.1"

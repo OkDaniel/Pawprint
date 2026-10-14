@@ -17,4 +17,11 @@ describe('getLogicalDate', () => {
   it('does not roll a late Chicago evening into the next logical date', () => {
     expect(getLogicalDate(new Date('2026-09-30T03:30:00.000Z'), timeZone)).toBe('2026-09-29');
   });
+
+  it('keeps the 4 AM wall-clock boundary across both DST transition days', () => {
+    expect(getLogicalDate(new Date('2026-03-08T08:59:59.999Z'), timeZone)).toBe('2026-03-07');
+    expect(getLogicalDate(new Date('2026-03-08T09:00:00.000Z'), timeZone)).toBe('2026-03-08');
+    expect(getLogicalDate(new Date('2026-11-01T09:59:59.999Z'), timeZone)).toBe('2026-10-31');
+    expect(getLogicalDate(new Date('2026-11-01T10:00:00.000Z'), timeZone)).toBe('2026-11-01');
+  });
 });

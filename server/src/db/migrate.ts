@@ -29,6 +29,6 @@ async function migrate(): Promise<void> {
 }
 
 migrate().catch((error: unknown) => {
-  console.error('Migration failed.', error);
+  console.error('Migration failed. MariaDB DDL may already be committed; inspect the schema and schema_migrations before retrying.', error);
   process.exitCode = 1;
 }).finally(closeDatabasePool);

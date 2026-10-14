@@ -7,6 +7,9 @@ interface FactorRow extends RowDataPacket { id: number; slug: string; name: stri
 interface FeelingRow extends RowDataPacket { id: number; slug: string | null; name: string; is_builtin: number; check_in_id?: number }
 interface SymptomRow extends RowDataPacket { id: number; name: string; category: SymptomCategory; severity?: number; check_in_id?: number }
 export interface OwnedLibraryItem { id: number; name: string }
+interface CreateRequestRow extends RowDataPacket { id: number; create_request_hash: Buffer }
+export interface CreateRequestRecord { id: number; requestHash: Buffer }
+export interface CreatePersistenceResult extends CreateRequestRecord { created: boolean }
 
 export class CheckInRepository {
   constructor(private readonly pool: Pool = getDatabasePool()) {}
@@ -55,12 +58,33 @@ export class CheckInRepository {
     return rows.map((row) => Number(row.id));
   }
 
-  async create(userId: number, input: CreateCheckInInput, occurredAt: Date, logicalDate: string): Promise<number> {
+  async findByClientRequestId(userId: number, clientRequestId: string): Promise<CreateRequestRecord | null> {
+    const [rows] = await this.pool.execute<CreateRequestRow[]>(
+      `SELECT id, create_request_hash FROM check_ins
+       WHERE user_id = ? AND client_request_id = ? LIMIT 1`, [userId, clientRequestId],
+    );
+    const row = rows[0];
+    return row ? { id: Number(row.id), requestHash: Buffer.from(row.create_request_hash) } : null;
+  }
+
+  async create(
+    userId: number,
+    input: CreateCheckInInput,
+    occurredAt: Date,
+    logicalDate: string,
+    clientRequestId?: string,
+    requestHash?: Buffer,
+  ): Promise<CreatePersistenceResult> {
     const connection = await this.pool.getConnection();
     try {
       await connection.beginTransaction();
       const [result] = await connection.execute<ResultSetHeader>(
-        'INSERT INTO check_ins (user_id, occurred_at, logical_date) VALUES (?, ?, ?)', [userId, occurredAt, logicalDate],
+        clientRequestId && requestHash
+          ? 'INSERT INTO check_ins (user_id, occurred_at, logical_date, client_request_id, create_request_hash) VALUES (?, ?, ?, ?, ?)'
+          : 'INSERT INTO check_ins (user_id, occurred_at, logical_date) VALUES (?, ?, ?)',
+        clientRequestId && requestHash
+          ? [userId, occurredAt, logicalDate, clientRequestId, requestHash]
+          : [userId, occurredAt, logicalDate],
       );
       const id = result.insertId;
       if (input.mood != null) {
@@ -89,9 +113,13 @@ export class CheckInRepository {
         );
       }
       await connection.commit();
-      return id;
+      return { id, requestHash: requestHash ?? Buffer.alloc(0), created: true };
     } catch (error) {
       await connection.rollback();
+      if (clientRequestId && requestHash && isDuplicateEntry(error)) {
+        const existing = await this.findByClientRequestId(userId, clientRequestId);
+        if (existing) return { ...existing, created: false };
+      }
       throw error;
     } finally { connection.release(); }
   }
@@ -182,3 +210,4 @@ function toFeeling(row: FeelingRow): Feeling { return { id: Number(row.id), slug
 function toSymptomRating(row: SymptomRow): SymptomRating { return { symptomId: Number(row.id), name: row.name, category: row.category, severity: Number(row.severity) }; }
 function asIsoString(value: Date | string): string { return value instanceof Date ? value.toISOString() : new Date(`${value}Z`).toISOString(); }
 function asDateString(value: Date | string): string { return value instanceof Date ? value.toISOString().slice(0, 10) : String(value).slice(0, 10); }
+function isDuplicateEntry(error: unknown): boolean { return typeof error === 'object' && error !== null && 'code' in error && error.code === 'ER_DUP_ENTRY'; }

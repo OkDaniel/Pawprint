@@ -1,12 +1,16 @@
 .shell { min-height: 100vh; }
 .header { display: flex; align-items: center; justify-content: space-between; gap: 2rem; padding: 1rem 2rem; background: var(--surface); border-bottom: 1px solid var(--border); }
 .brand { color: var(--text); font-size: 1.2rem; font-weight: 750; text-decoration: none; }
-.account { display: flex; align-items: center; gap: .65rem; }
+.account { display: flex; flex-wrap: wrap; align-items: center; justify-content: flex-end; gap: .65rem; min-width: 0; }
 .accountMenu { position: relative; }
-.accountTrigger, .logoutButton { padding: .45rem .75rem; border: 1px solid var(--border); border-radius: 999px; background: white; color: var(--text); cursor: pointer; font: inherit; }
+.accountTrigger, .logoutButton, .coinButton { padding: .45rem .75rem; border: 1px solid var(--border); border-radius: 999px; background: white; color: var(--text); cursor: pointer; font: inherit; }
+.coinControl { position: relative; }
+.coinButton { min-width: 8.5rem; white-space: nowrap; font-size: .85rem; }
+.coinButton:disabled { cursor: wait; opacity: .65; }
+.coinNotice { position: absolute; z-index: 50; top: calc(100% + .5rem); right: 0; width: min(18rem,calc(100vw - 4rem)); padding: .55rem .7rem; border: 1px solid var(--border); border-radius: .65rem; background: var(--surface); color: var(--text); font-size: .8rem; }
 .accountTrigger { display: flex; align-items: center; gap: .35rem; font-weight: 700; }
 .accountTrigger[aria-expanded='true'] { border-color: var(--accent-strong); background: var(--accent); }
-.accountTrigger:focus-visible, .logoutButton:focus-visible, .closePanel:focus-visible, .saveCompanion:focus-visible { outline: 3px solid color-mix(in srgb, var(--accent-strong) 45%, transparent); outline-offset: 2px; }
+.accountTrigger:focus-visible, .logoutButton:focus-visible, .coinButton:focus-visible, .closePanel:focus-visible, .saveCompanion:focus-visible { outline: 3px solid color-mix(in srgb, var(--accent-strong) 45%, transparent); outline-offset: 2px; }
 .accountPanel { position: absolute; z-index: 40; top: calc(100% + .65rem); right: 0; width: min(25rem, calc(100vw - 2rem)); padding: 1rem; border: 1px solid var(--border); border-radius: 1.2rem; background: var(--surface); box-shadow: 0 18px 50px rgb(30 48 37 / 24%); }
 .panelHeader { display: flex; align-items: center; justify-content: space-between; gap: 1rem; margin-bottom: .65rem; }
 .panelHeader h2 { margin: 0; font-size: 1.1rem; }
@@ -20,4 +24,5 @@
 .saveCompanion:disabled { cursor: not-allowed; opacity: .6; }
 .accountError { margin: 0; color: #9d3028; }
 .main { width: min(1120px, calc(100% - 3rem)); margin: 0 auto; padding: 3rem 0; }
-@media (max-width: 760px) { .header { align-items: flex-start; flex-wrap: wrap; } }
+.main:has(> :global([aria-labelledby='cat-room-title'])) { width: min(74rem, calc(100% - 3rem)); padding-block: 1.5rem; }
+@media (max-width: 760px) { .header { align-items: flex-start; flex-wrap: wrap; gap: .75rem; padding-inline: 1.5rem; } }

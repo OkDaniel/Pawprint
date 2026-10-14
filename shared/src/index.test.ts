@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { catAppearanceKeys, createCheckInRequestSchema, deriveSleepDurationMinutes, historyQuerySchema, moodTrendResponseSchema, normalizeCatAppearanceKey, onboardingCompletionRequestSchema, registerRequestSchema, symptomCategories, to24HourTime, trackingLibraryStarterSlugs, updateCheckInRequestSchema, updateCompanionRequestSchema } from './index.js';
+import { catAppearanceKeys, createCheckInRequestSchema, deriveSleepDurationMinutes, floorLayoutRequestSchema, historyQuerySchema, moodTrendResponseSchema, normalizeCatAppearanceKey, onboardingCompletionRequestSchema, purchaseRequestSchema, registerRequestSchema, symptomCategories, to24HourTime, trackingLibraryStarterSlugs, updateCheckInRequestSchema, updateCompanionRequestSchema } from './index.js';
 
 describe('registration and companion schemas', () => {
   it('registers with credentials only and strips obsolete appearance input', () => {
@@ -47,7 +47,12 @@ describe('canonical tracking-library starters', () => {
 });
 
 describe('createCheckInRequestSchema', () => {
-  const parse = (value: object) => createCheckInRequestSchema.safeParse(value).success;
+  const clientRequestId = '11111111-1111-4111-8111-111111111111';
+  const parse = (value: object) => createCheckInRequestSchema.safeParse({ clientRequestId, ...value }).success;
+  it('requires a valid create-request UUID', () => {
+    expect(createCheckInRequestSchema.safeParse({ mood: 4 }).success).toBe(false);
+    expect(createCheckInRequestSchema.safeParse({ clientRequestId: 'not-a-uuid', mood: 4 }).success).toBe(false);
+  });
   it.each([1, 5])('accepts mood %i', (mood) => expect(parse({ mood })).toBe(true));
   it.each([0, 6])('rejects mood %i', (mood) => expect(parse({ mood })).toBe(false));
   it.each([0, 10])('accepts pain %i with mood', (pain) => expect(parse({ mood: 3, pain })).toBe(true));
@@ -76,8 +81,27 @@ describe('createCheckInRequestSchema', () => {
     expect(parse({ mood: 4, sleep: {} })).toBe(false);
   });
   it('does not accept client ownership fields as part of the parsed Sleep command', () => {
-    const result = createCheckInRequestSchema.parse({ mood: 4, sleep: { durationMinutes: 450, userId: 99, logicalDate: '2020-01-01' } });
+    const result = createCheckInRequestSchema.parse({ clientRequestId, mood: 4, sleep: { durationMinutes: 450, userId: 99, logicalDate: '2020-01-01' } });
     expect(result.sleep).toEqual({ durationMinutes: 450 });
+  });
+});
+
+describe('economy and room request schemas', () => {
+  it('strips client price and ownership fields from purchases', () => {
+    expect(purchaseRequestSchema.parse({
+      productId: 'decor_yarn_ball', requestId: '11111111-1111-4111-8111-111111111111',
+      price: 0, userId: 999,
+    })).toEqual({ productId: 'decor_yarn_ball', requestId: '11111111-1111-4111-8111-111111111111' });
+  });
+
+  it('rejects duplicate instances and item 21 at the complete-layout boundary', () => {
+    expect(floorLayoutRequestSchema.safeParse({ placements: [
+      { inventoryInstanceId: 1, gridU: 2, gridV: 2 },
+      { inventoryInstanceId: 1, gridU: 3, gridV: 3 },
+    ] }).success).toBe(false);
+    expect(floorLayoutRequestSchema.safeParse({ placements: Array.from({ length: 21 }, (_, index) => ({
+      inventoryInstanceId: index + 1, gridU: 1, gridV: 1,
+    })) }).success).toBe(false);
   });
 });
 

@@ -1,22 +1,48 @@
+import { createHash, timingSafeEqual } from 'node:crypto';
 import { deriveSleepDurationMinutes, type CheckIn, type CreateCheckInInput, type HistoryQuery, type UpdateCheckInInput } from '@capstone/shared';
 import { AppError } from '../errors/AppError.js';
 import { CheckInRepository } from './checkInRepository.js';
 import { getLogicalDate } from './logicalDate.js';
+import { EconomyService } from '../economy/economyService.js';
+import { postCommitRewardRunner, type RewardRunner } from '../economy/postCommitRewardRunner.js';
+
+export interface CreateCheckInResult { checkIn: CheckIn; created: boolean }
 
 export class CheckInService {
-  constructor(private readonly repository = new CheckInRepository(), private readonly now = () => new Date()) {}
+  constructor(
+    private readonly repository = new CheckInRepository(),
+    private readonly now = () => new Date(),
+    private readonly economy = new EconomyService(),
+    private readonly rewardRunner: RewardRunner = postCommitRewardRunner,
+  ) {}
 
-  async create(userId: number, input: CreateCheckInInput): Promise<CheckIn> {
+  async create(userId: number, input: CreateCheckInInput): Promise<CreateCheckInResult> {
     const normalizedInput = input.sleep ? { ...input, sleep: {
       ...input.sleep,
       durationMinutes: input.sleep.bedtime && input.sleep.wakeTime ? deriveSleepDurationMinutes(input.sleep.bedtime, input.sleep.wakeTime) : null,
     } } : input;
+    const requestHash = hashCreateCommand(normalizedInput);
+    const replay = await this.repository.findByClientRequestId(userId, input.clientRequestId);
+    if (replay) return { checkIn: await this.resolveReplay(userId, replay.id, replay.requestHash, requestHash), created: false };
     await this.validateLibraries(userId, normalizedInput);
     const occurredAt = this.now();
-    const id = await this.repository.create(userId, normalizedInput, occurredAt, getLogicalDate(occurredAt));
-    const checkIn = await this.repository.findById(userId, id);
+    const logicalDate = getLogicalDate(occurredAt);
+    const persisted = await this.repository.create(
+      userId, normalizedInput, occurredAt, logicalDate, input.clientRequestId, requestHash,
+    );
+    if (!hashesMatch(persisted.requestHash, requestHash)) {
+      throw new AppError(409, 'CHECK_IN_REQUEST_CONFLICT', 'That Check-In request ID was already used with different details.');
+    }
+    const checkIn = await this.repository.findById(userId, persisted.id);
     if (!checkIn) throw new AppError(500, 'CHECK_IN_READ_FAILED', 'The check-in was saved but could not be read.');
-    return checkIn;
+    if (persisted.created) {
+      this.rewardRunner.enqueue(() => this.economy.grantDailyCheckInReward(userId, logicalDate, {
+        occurredAt,
+        createdAt: occurredAt,
+        hasClientRequestId: true,
+      }));
+    }
+    return { checkIn, created: persisted.created };
   }
 
   async update(userId: number, id: number, input: UpdateCheckInInput): Promise<CheckIn> {
@@ -62,4 +88,34 @@ export class CheckInService {
 
   get(userId: number, id: number): Promise<CheckIn | null> { return this.repository.findById(userId, id); }
   list(userId: number, range: HistoryQuery = {}): Promise<CheckIn[]> { return this.repository.list(userId, undefined, undefined, range); }
+
+  private async resolveReplay(userId: number, id: number, storedHash: Buffer, requestHash: Buffer): Promise<CheckIn> {
+    if (!hashesMatch(storedHash, requestHash)) {
+      throw new AppError(409, 'CHECK_IN_REQUEST_CONFLICT', 'That Check-In request ID was already used with different details.');
+    }
+    const checkIn = await this.repository.findById(userId, id);
+    if (!checkIn) throw new AppError(500, 'CHECK_IN_READ_FAILED', 'The saved Check-In could not be read.');
+    return checkIn;
+  }
+}
+
+export function hashCreateCommand(input: CreateCheckInInput): Buffer {
+  const canonical = {
+    mood: input.mood,
+    feelingIds: [...input.feelingIds].sort((a, b) => a - b),
+    pain: input.pain ?? null,
+    symptoms: [...input.symptoms].sort((a, b) => a.symptomId - b.symptomId),
+    factors: [...input.factors].sort((a, b) => a.factorId - b.factorId),
+    sleep: input.sleep ? {
+      bedtime: input.sleep.bedtime ?? null,
+      wakeTime: input.sleep.wakeTime ?? null,
+      durationMinutes: input.sleep.durationMinutes ?? null,
+      qualityScore: input.sleep.qualityScore ?? null,
+    } : null,
+  };
+  return createHash('sha256').update(JSON.stringify(canonical)).digest();
+}
+
+function hashesMatch(left: Buffer, right: Buffer): boolean {
+  return left.length === right.length && timingSafeEqual(left, right);
 }

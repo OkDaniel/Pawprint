@@ -10,6 +10,9 @@ import { createTrackingLibraryRouter } from './routes/trackingLibrary.js';
 import { createSleepRouter } from './routes/sleep.js';
 import { createOnboardingRouter } from './routes/onboarding.js';
 import { createInsightsRouter } from './routes/insights.js';
+import { createEconomyRouter } from './routes/economy.js';
+import { createDevCoinRouter } from './routes/devCoins.js';
+import { createRoomRouter } from './routes/room.js';
 
 export function createApp(): Express {
   const app = express();
@@ -23,6 +26,15 @@ export function createApp(): Express {
   app.use('/api/check-ins', createCheckInRouter());
   app.use('/api/sleep', createSleepRouter());
   app.use('/api/insights', createInsightsRouter());
+  app.use('/api/economy', createEconomyRouter(undefined, shouldRegisterDevCoinGrants(env.NODE_ENV, env.ENABLE_DEV_COIN_GRANTS)));
+  app.use('/api/room', createRoomRouter());
+  if (shouldRegisterDevCoinGrants(env.NODE_ENV, env.ENABLE_DEV_COIN_GRANTS)) {
+    app.use('/api/dev/coins', createDevCoinRouter());
+  } else {
+    app.use('/api/dev/coins', (_request, response) => response.status(404).json({
+      error: { code: 'NOT_FOUND', message: 'Not found.' },
+    }));
+  }
   app.use('/api', createTrackingLibraryRouter());
 
   if (env.NODE_ENV === 'production') {
@@ -35,4 +47,8 @@ export function createApp(): Express {
 
   app.use(errorHandler);
   return app;
+}
+
+export function shouldRegisterDevCoinGrants(nodeEnv: string, enabled: boolean): boolean {
+  return nodeEnv !== 'production' && enabled;
 }

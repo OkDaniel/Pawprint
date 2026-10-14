@@ -599,6 +599,24 @@ describe('Check-In wizard', () => {
     expect(api.savedBody()).toMatchObject({ symptoms: [] });
   });
 
+  it('reuses one create request UUID and prepared payload for a same-intent retry', async () => {
+    const api = mockReliabilityApi({ code: 'TEMPORARY_FAILURE', message: 'Please retry.', details: {} });
+    renderWizard();
+    await screen.findByRole('heading', { name: 'Mood', level: 1 });
+    fireEvent.click(screen.getByRole('button', { name: 'Okay, mood 3 of 5' }));
+    for (let index = 0; index < 3; index += 1) fireEvent.click(screen.getByRole('button', { name: 'Next' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Save Check-In' }));
+    expect(await screen.findByRole('alert')).toHaveTextContent('Please retry.');
+    fireEvent.click(screen.getByRole('button', { name: 'Save Check-In' }));
+    await screen.findByRole('status');
+    const createBodies = api.fetchMock.mock.calls
+      .filter(([url, init]) => String(url) === '/api/check-ins' && init?.method === 'POST')
+      .map(([, init]) => JSON.parse(String(init?.body)) as Record<string, unknown>);
+    expect(createBodies).toHaveLength(2);
+    expect(createBodies[0]).toEqual(createBodies[1]);
+    expect(createBodies[0]?.clientRequestId).toEqual(expect.stringMatching(/^[0-9a-f-]{36}$/i));
+  });
+
   it('uses an in-app discard dialog and reopens with a fresh draft', async () => {
     mockReliabilityApi(); renderWizardWithReopen();
     await screen.findByRole('heading', { name: 'Mood', level: 1 });
@@ -642,7 +660,10 @@ describe('Check-In wizard', () => {
     for (let index = 0; index < 3; index += 1) fireEvent.click(screen.getByRole('button', { name: 'Next' }));
     fireEvent.click(screen.getByRole('button', { name: 'Save Check-In' }));
     await screen.findByRole('status');
-    expect(api.savedBody()).toEqual({ mood: 5, feelingIds: [], pain: null, symptoms: [], factors: [] });
+    expect(api.savedBody()).toMatchObject({
+      clientRequestId: expect.stringMatching(/^[0-9a-f-]{36}$/i),
+      mood: 5, feelingIds: [], pain: null, symptoms: [], factors: [],
+    });
   });
 
   it.each([

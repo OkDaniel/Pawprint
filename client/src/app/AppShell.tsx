@@ -1,8 +1,8 @@
 import { useEffect, useRef, useState, type FormEvent } from 'react';
-import { NavLink, Outlet, useNavigate } from 'react-router-dom';
-import { DEFAULT_CAT_APPEARANCE, type CatAppearanceKey } from '@capstone/shared';
+import { Link, NavLink, Outlet, useNavigate } from 'react-router-dom';
+import { DEFAULT_CAT_APPEARANCE } from '@capstone/shared';
 import { useAuth } from '../auth/useAuth';
-import { CatAppearancePicker } from '../features/auth/CatAppearancePicker';
+import { DevelopmentCoinButton } from './DevelopmentCoinButton';
 import styles from './AppShell.module.css';
 
 export function AppShell() {
@@ -11,7 +11,6 @@ export function AppShell() {
   const accountMenu = useRef<HTMLDivElement>(null);
   const accountTrigger = useRef<HTMLButtonElement>(null);
   const [accountOpen, setAccountOpen] = useState(false);
-  const [appearance, setAppearance] = useState<CatAppearanceKey>(user?.catAppearance ?? DEFAULT_CAT_APPEARANCE);
   const [catName, setCatName] = useState(user?.catName ?? 'Mochi');
   const [savingCompanion, setSavingCompanion] = useState(false);
   const [accountError, setAccountError] = useState('');
@@ -37,7 +36,6 @@ export function AppShell() {
 
   function toggleAccount() {
     if (!accountOpen) {
-      setAppearance(user?.catAppearance ?? DEFAULT_CAT_APPEARANCE);
       setCatName(user?.catName ?? 'Mochi');
       setAccountError('');
     }
@@ -51,7 +49,7 @@ export function AppShell() {
     setSavingCompanion(true);
     setAccountError('');
     try {
-      await updateCompanion(appearance, trimmedName);
+      await updateCompanion(user?.catAppearance ?? DEFAULT_CAT_APPEARANCE, trimmedName);
       setAccountOpen(false);
       accountTrigger.current?.focus();
     } catch (error: unknown) {
@@ -74,12 +72,13 @@ export function AppShell() {
               <div className={styles.panelHeader!}><h2 id="account-title">Account</h2><button className={styles.closePanel!} type="button" aria-label="Close account settings" onClick={() => { setAccountOpen(false); accountTrigger.current?.focus(); }}>×</button></div>
               <form onSubmit={saveCompanion}>
                 <label className={styles.catNameField!}>Cat name<input value={catName} onChange={(event) => { setCatName(event.target.value); setAccountError(''); }} maxLength={40} required /></label>
-                <CatAppearancePicker legend="Cat appearance" value={appearance} onChange={setAppearance} />
+                <p><Link to="/app/store" onClick={() => setAccountOpen(false)}>Manage cat coats in Store</Link></p>
                 {accountError && <p className={styles.accountError!} role="alert">{accountError}</p>}
                 <button className={styles.saveCompanion!} type="submit" disabled={savingCompanion}>{savingCompanion ? 'Saving…' : 'Save'}</button>
               </form>
             </section>}
           </div>
+          {(import.meta.env.MODE === 'development' || import.meta.env.MODE === 'test') && user && <DevelopmentCoinButton key={user.id} />}
           <button className={styles.logoutButton!} type="button" onClick={() => void logout().then(() => navigate('/login'))}>Log out</button>
         </div>
       </header>

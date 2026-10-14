@@ -1,12 +1,13 @@
 import { useEffect, useRef } from 'react';
 import styles from './CheckInPage.module.css';
 
-export function ConfirmDialog({ title, body, cancelLabel, confirmLabel, busy = false, onCancel, onConfirm, fallbackFocus }: {
+export function ConfirmDialog({ title, body, cancelLabel, confirmLabel, busy = false, busyLabel = 'Deleting…', onCancel, onConfirm, fallbackFocus }: {
   title: string;
   body: string;
   cancelLabel: string;
   confirmLabel: string;
   busy?: boolean;
+  busyLabel?: string;
   onCancel(): void;
   onConfirm(): void;
   fallbackFocus?(): void;
@@ -16,12 +17,16 @@ export function ConfirmDialog({ title, body, cancelLabel, confirmLabel, busy = f
   const cancelAction = useRef(onCancel);
   const isBusy = useRef(busy);
   const fallbackAction = useRef(fallbackFocus);
+  const restoreFrame = useRef<number | null>(null);
+  const returnFocus = useRef<HTMLElement | null>(null);
   cancelAction.current = onCancel;
   isBusy.current = busy;
   fallbackAction.current = fallbackFocus;
 
   useEffect(() => {
-    const returnFocus = document.activeElement instanceof HTMLElement ? document.activeElement : null;
+    // StrictMode repeats setup after cleanup; cancel that obsolete restoration.
+    if (restoreFrame.current !== null) window.cancelAnimationFrame(restoreFrame.current);
+    if (!returnFocus.current) returnFocus.current = document.activeElement instanceof HTMLElement ? document.activeElement : null;
     cancelButton.current?.focus();
     function handleKeyDown(event: KeyboardEvent) {
       if (event.key === 'Escape' && !isBusy.current) {
@@ -45,8 +50,8 @@ export function ConfirmDialog({ title, body, cancelLabel, confirmLabel, busy = f
     document.addEventListener('keydown', handleKeyDown);
     return () => {
       document.removeEventListener('keydown', handleKeyDown);
-      window.requestAnimationFrame(() => {
-        if (returnFocus?.isConnected) returnFocus.focus();
+      restoreFrame.current = window.requestAnimationFrame(() => {
+        if (returnFocus.current?.isConnected) returnFocus.current.focus();
         else fallbackAction.current?.();
       });
     };
@@ -58,7 +63,7 @@ export function ConfirmDialog({ title, body, cancelLabel, confirmLabel, busy = f
       <p id="confirm-body">{body}</p>
       <div className={styles.confirmActions!}>
         <button ref={cancelButton} className={styles.secondary!} type="button" disabled={busy} onClick={onCancel}>{cancelLabel}</button>
-        <button className={styles.destructive!} type="button" disabled={busy} onClick={onConfirm}>{busy ? 'Deleting…' : confirmLabel}</button>
+        <button className={styles.destructive!} type="button" disabled={busy} onClick={onConfirm}>{busy ? busyLabel : confirmLabel}</button>
       </div>
     </section>
   </div>;

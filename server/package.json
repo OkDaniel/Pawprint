@@ -9,11 +9,14 @@
     "start": "node dist/server.js",
     "lint": "eslint .",
     "test": "vitest run",
+    "test:db-phase3": "RUN_DB_INTEGRATION=1 vitest run src/db/phase3Database.integration.test.ts",
     "typecheck": "tsc -p tsconfig.json --noEmit --pretty false",
     "db:migrate": "tsx src/db/migrate.ts",
     "db:seed": "tsx src/db/seed.ts",
     "db:verify": "tsx src/db/verify.ts",
-    "db:seed-demo": "tsx src/db/demoData/seedDemo.ts"
+    "db:seed-demo": "tsx src/db/demoData/seedDemo.ts",
+    "db:repair-rewards": "tsx src/db/repairEconomyRewards.ts",
+    "db:verify-phase3": "tsx src/db/verifyPhase3Migrations.ts"
   },
   "dependencies": {
     "@capstone/shared": "0.1.0",
